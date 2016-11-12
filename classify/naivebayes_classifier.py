@@ -21,13 +21,6 @@ class NaiveBayesClassifier:
         # probability of vocabulary for each class
         self.pv    = np.zeros([nc, nv])
 
-
-    # Training documents should be reformed into following format
-    # documents = [[[<word1 in doc1>, <word2 in doc1>, <word3 in doc1> ], <class for doc1>],
-    #              [[<word1 in doc2>, <word2 in doc2>, <word3 in doc2> ], <class for doc2>],
-    #              ...]
-    # all words and class should be represented in number !
-
     def train(self, documents, wordsmoothing=self.nv):
         """
         Training documents should be reformed into following format
