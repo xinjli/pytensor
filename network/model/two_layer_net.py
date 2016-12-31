@@ -32,9 +32,8 @@ class TwoLayerNet:
         return y
 
     def loss(self, x, t):
-
         y = self.predict(x)
-        return cross_entropy_error(y, t)
+        return onehot_cross_entropy_error(y, t)
 
     def accuracy(self, x, t):
 
