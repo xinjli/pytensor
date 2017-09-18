@@ -127,3 +127,4 @@ gen
 # Created by .ignore support plugin (hsz.mobi)
 
 tutorial/*
+.DS_Store
