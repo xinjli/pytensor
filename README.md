@@ -1,2 +1,3 @@
-# pyml
-python machine learning implementations
+Deep Learning framework with pure numpy
+
+

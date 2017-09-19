@@ -16,3 +16,7 @@ class Variable:
 
     def clear_grad(self):
         self.grad = np.zeros(self.value.shape)
+
+    def reshape(self, array):
+        self.value.reshape(array)
+        self.grad.reshape(array)
