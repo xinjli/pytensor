@@ -1,50 +1,58 @@
 from network.base.variable import *
-from common.config import *
 import numpy as np
 import pickle
 
 
-def load_parameter(filename):
-    filepath = config.pyai_path+'corpus/pickle/'+filename+'.pkl'
-    return pickle.load(open(filepath, 'rb'))
-
-
-def dump_parameter(obj, filename):
-    filepath = config.pyai_path+'corpus/pickle/'+filename+'.pkl'
-    pickle.dump(obj, open(filepath, 'wb'))
-
-
 class Parameter:
     """
-    Parameter
+    Parameter is a structure to manage all trainable variables in the graph.
+
+    Each trainable variable should be initialized using Parameter
     """
 
     def __init__(self):
+
+        # a dictionary mapping names to variables
         self.variable_dict = dict()
 
+        # embedding for partial updates
         self.embeddings = None
         self.temp_variables = []
 
     def get_variable(self, name, shape):
+        """
+        retrieve a variable with its name
+
+        :param name: name of the variable
+        :param shape: desired shape
+        :return:
+        """
 
         if name in self.variable_dict:
+            # if the variable exists in the dictionary,
+            # retrieve it directly
             return self.variable_dict[name]
         else:
-            # initialize a new variable for it
+            # if not created yet, initialize a new variable for it
             value = np.random.standard_normal(shape) / np.sqrt(shape[0])
             variable = Variable(value, name=name)
 
-            # register it
+            # register the variable
             self.variable_dict[name] = variable
 
             return variable
 
     def get_embedding(self, vocab_size, word_dim):
 
+        # get current embedding if it is created already
         if self.embeddings != None:
             return self.embeddings
 
+        # initialize the embedding
         self.embeddings = []
+
+        # embedding is implemented as a list of variables
+        # this is for efficient update
         for i in range(vocab_size):
             embedding = Variable(np.random.uniform(-np.sqrt(1./word_dim), np.sqrt(1./word_dim), word_dim))
             self.embeddings.append(embedding)
@@ -57,7 +65,7 @@ class Parameter:
         register temporary variable for optimizer to update variable
         this is mainly for word embedding training
 
-        :param temp_variable:
+        :param temp_variable: a trainable variable (usually a variable in the embedding)
         :return:
         """
 
@@ -66,7 +74,7 @@ class Parameter:
 
     def clear_temp_variable(self):
         """
-        clear param embedding list
+        clear temporary variable
 
         :return:
         """

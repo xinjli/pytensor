@@ -2,7 +2,6 @@
 import numpy as np
 import logging
 from network.base.parameter import *
-from common.logger import *
 
 
 class SGD:
@@ -16,21 +15,11 @@ class SGD:
             # update param value
             param = self.parameter.variable_dict[param_name]
 
-            # report logging
-            if debug:
-                info = "SGD logging: parameter: " + str(param_name) + " value " + str(param.value)+" grad "+str(param.grad)
-                logging.info(info)
-
             # update
             if param.trainable:
                 param.value -= self.lr * param.grad
 
         for temp_variable in self.parameter.temp_variables:
-
-            # report logging
-            if debug:
-                info = "SGD logging: parameter: " + str(temp_variable.name) + " value " + str(temp_variable.value)+" grad "+str(temp_variable.grad)
-                logging.info(info)
 
             # update temp_variable
             if temp_variable:

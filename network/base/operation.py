@@ -2,6 +2,62 @@ from network.base.variable import *
 from network.base.functions import *
 from network.base.parameter import *
 
+class Operation:
+    """
+    An interface that every operation should implement
+    """
+
+    def forward(self, input_variables):
+        """
+        forward computation
+
+        :param input_variables: input variables
+        :return: output variable
+        """
+        raise NotImplementedError
+
+    def backward(self):
+        """
+        backprop loss and update
+
+        :return:
+        """
+        raise NotImplementedError
+
+
+class Add(Operation):
+
+    def forward(self, input_variables):
+        """
+        Add all variables in the input_variable
+
+        :param input_variables:
+        :return:
+        """
+
+        self.input_variables = input_variables
+
+        # value for the output variable
+        value = np.zeros_like(self.input_variables[0])
+
+        for input_variable in self.input_variables:
+            value += input_variable.value
+
+        self.output_variable = Variable(value)
+
+        return self.output_variable
+
+    def backward(self):
+        """
+        backward grad into each input variables
+
+        :return:
+        """
+
+        for input_variable in self.input_variables:
+            input_variable.grad += self.output_variable.grad
+
+
 class HStack:
 
     def __init__(self, name="HStack"):
