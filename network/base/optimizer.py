@@ -25,7 +25,6 @@ class SGD:
             if temp_variable:
                 temp_variable.value -= self.lr * temp_variable.grad
 
-
         # clear all gradients
         self.parameter.clear_grads()
 

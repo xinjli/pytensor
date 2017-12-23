@@ -12,6 +12,11 @@ class Add(Operation):
 
         self.input_variables = input_variables
 
+        # update dependency
+        for input_variable in self.input_variables:
+            input_variable.dependency_cnt += 1
+
+
         # value for the output variable
         value = np.zeros_like(self.input_variables[0])
 
@@ -48,10 +53,14 @@ class Multiply(Operation):
         assert(len(input_variables)==2)
 
         self.input_variables = input_variables
-        self.x = input_variables[0]
-        self.y = input_variables[1]
+
+        # update dependency
+        for input_variable in self.input_variables:
+            input_variable.dependency_cnt += 1
 
         # validate both input_variables have same shape
+        self.x = input_variables[0]
+        self.y = input_variables[1]
         assert(self.x.shape == self.y.shape)
 
         # value for the output variable
@@ -84,6 +93,11 @@ class Matmul:
         assert(len(input_variables)==2)
 
         self.input_variables = input_variables
+
+        # update dependency
+        for input_variable in self.input_variables:
+            input_variable.dependency_cnt += 1
+
         self.x = input_variables[0]
         self.y = input_variables[1]
 

@@ -30,7 +30,7 @@ class Variable:
         self.input_ops = input_ops
 
         # the number of operation that depends on this variable
-        self.dependency_count = 0
+        self.dependency_cnt = 0
 
 
     def clear_grad(self):
@@ -51,6 +51,6 @@ class Variable:
         if self.input_ops is None:
             return
 
-        self.dependency_count -= 1
-        if self.dependency_count <= 0:
+        self.dependency_cnt -= 1
+        if self.dependency_cnt <= 0:
             self.input_ops.backward()
