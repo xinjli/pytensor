@@ -1,10 +1,13 @@
+from network.base.optimizer import *
+
 class Trainer:
 
     def __init__(self, model):
 
         self.model = model
+        self.optimizer = SGD(self.model.parameter)
 
-    def train(self, x_train, y_train, x_test=None, y_test=None, epoch=40, iteration=10):
+    def train(self, x_train, y_train, x_test=None, y_test=None, epoch=40, iteration=10000):
 
         for ii in range(epoch):
 
@@ -31,7 +34,7 @@ class Trainer:
 
                 self.model.backward()
 
-                self.model.optimizer.update()
+                self.optimizer.update()
 
                 if (i+1) % iteration == 0:
                     # report iteration
@@ -43,9 +46,13 @@ class Trainer:
             print("=== Epoch Summary ===")
             print("train loss       ", loss/len(x_train), " ===")
 
+
+            test_loss = 0.0
             for i in range(len(x_test)):
 
                 x = x_test[i]
                 y = y_test[i]
 
-                self.model.accuracy(x, y)
+                self.model.forward(x)
+                test_loss += self.model.loss(y)
+            print("test loss: ", test_loss/len(x_test))

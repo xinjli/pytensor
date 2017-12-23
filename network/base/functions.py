@@ -40,6 +40,13 @@ def softmax(x):
 
 
 def mean_squared_error(y, t):
+    """
+    mean square error
+
+    :param y:
+    :param t:
+    :return:
+    """
     return 0.5 * np.sum((y - t) ** 2)
 
 
