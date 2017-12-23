@@ -56,7 +56,6 @@ class LinearModel:
 
     def backward(self):
         self.loss_ops.backward()
-        self.matmul.backward()
 
 
 if __name__ == '__main__':

@@ -18,19 +18,20 @@ class Add(Operation):
         for input_variable in self.input_variables:
             value += input_variable.value
 
-        self.output_variable = Variable(value)
+        self.output_variable = Variable(value, input_ops=self)
 
         return self.output_variable
 
     def backward(self):
         """
-        backward grad into each input variables
+        backward grad into each input variable
 
         :return:
         """
 
         for input_variable in self.input_variables:
             input_variable.grad += self.output_variable.grad
+            input_variable.backward()
 
 
 class Multiply(Operation):
@@ -55,7 +56,7 @@ class Multiply(Operation):
 
         # value for the output variable
         value = np.multiply(self.x, self.y)
-        self.output_variable = Variable(value)
+        self.output_variable = Variable(value, input_ops=self)
 
         return self.output_variable
 
@@ -66,9 +67,13 @@ class Multiply(Operation):
         :return:
         """
 
-        self.x.grad = np.multiply(self.output_variable.grad, self.y.value)
-        self.y.grad = np.multiply(self.output_variable.grad, self.x.value)
+        # update gradient
+        self.x.grad += np.multiply(self.output_variable.grad, self.y.value)
+        self.y.grad += np.multiply(self.output_variable.grad, self.x.value)
 
+        # back prop
+        for input_variable in self.input_variables:
+            input_variable.backward()
 
 
 class Matmul:
@@ -85,13 +90,18 @@ class Matmul:
         self.input_variable = input_variables
         out = np.dot(self.x.value, self.y.value)
 
-        self.output_variable = Variable(out)
+        self.output_variable = Variable(out, input_ops=self)
         return self.output_variable
 
     def backward(self):
 
+        # update gradient
         self.x.grad += np.dot(self.output_variable.grad, self.y.value.T)
         self.y.grad += np.dot(self.x.value.T, self.output_variable.grad)
+
+        # back prop
+        for input_variable in self.input_variables:
+            input_variable.backward()
 
 
 class Relu:

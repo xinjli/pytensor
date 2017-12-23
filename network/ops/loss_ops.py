@@ -62,4 +62,8 @@ class SquareErrorLoss(Loss):
         return loss_val
 
     def backward(self):
+        # update grad
         self.input_variable.grad = self.input_variable.value - self.target.value
+
+        # back prop
+        self.input_variable.backward()

@@ -7,7 +7,7 @@ class Variable:
 
     """
 
-    def __init__(self, value, name='Variable', trainable=True):
+    def __init__(self, value, name='Variable', input_ops=None, trainable=True):
         """
         :param value: numpy val
         :param name: name for the variable
@@ -20,9 +20,18 @@ class Variable:
         # value for backward computation
         self.grad = np.zeros(self.value.shape)
 
+        # name for the variable (which will used in parameter for registration)
         self.name = name
 
+        # whether the variable can be updated
         self.trainable = trainable
+
+        # the operation that produced this variable
+        self.input_ops = input_ops
+
+        # the number of operation that depends on this variable
+        self.dependency_count = 0
+
 
     def clear_grad(self):
         self.grad = np.zeros(self.value.shape)
@@ -30,3 +39,18 @@ class Variable:
     def reshape(self, array):
         self.value.reshape(array)
         self.grad.reshape(array)
+
+    def backward(self):
+        """
+        back propagation gradient into previous operation if it received all grad from dependency operations
+
+        :return:
+        """
+
+        # no backprop if no dependency
+        if self.input_ops is None:
+            return
+
+        self.dependency_count -= 1
+        if self.dependency_count <= 0:
+            self.input_ops.backward()
