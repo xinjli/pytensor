@@ -1,3 +1,4 @@
+from network.base.model import *
 from network.ops.math_ops import *
 from network.ops.loss_ops import *
 from network.base.trainer import *
@@ -25,7 +26,7 @@ def generate_dataset(num):
 
     return x, y
 
-class LinearModel:
+class LinearModel(Model):
 
     def __init__(self, input_size, output_size):
         """
@@ -47,12 +48,14 @@ class LinearModel:
         self.matmul = Matmul()
         self.loss_ops = SquareErrorLoss()
 
-    def forward(self, input_value):
-        output_variable = self.matmul.forward([input_value, self.W])
+    def forward(self, input_variable):
+        output_variable = self.matmul.forward([input_variable, self.W])
         self.loss_ops.forward(output_variable)
 
-    def loss(self, target):
-        return self.loss_ops.loss(target)
+        return output_variable
+
+    def loss(self, target_variable):
+        return self.loss_ops.loss(target_variable)
 
     def backward(self):
         self.loss_ops.backward()

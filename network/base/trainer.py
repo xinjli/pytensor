@@ -11,8 +11,6 @@ class Trainer:
 
         for ii in range(epoch):
 
-            print("Epoch ", ii)
-
             loss = 0.0
             accuracy = 0.0
 
@@ -43,8 +41,8 @@ class Trainer:
                     # clear ce loss
                     it_loss = 0.0
 
-            print("=== Epoch Summary ===")
-            print("train loss       ", loss/len(x_train), " ===")
+            print("=== Epoch ", ii, " Summary ===")
+            print("train loss: ", loss/len(x_train))
 
 
             test_loss = 0.0
@@ -55,4 +53,4 @@ class Trainer:
 
                 self.model.forward(x)
                 test_loss += self.model.loss(y)
-            print("test loss: ", test_loss/len(x_test))
+            print("test  loss: ", test_loss/len(x_test))
