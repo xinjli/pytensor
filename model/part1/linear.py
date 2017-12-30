@@ -1,7 +1,6 @@
-from network.base.model import *
 from network.ops.math_ops import *
 from network.ops.loss_ops import *
-from network.base.trainer import *
+from model.part1.trainer import *
 
 
 def generate_dataset(num):
@@ -26,7 +25,7 @@ def generate_dataset(num):
 
     return x, y
 
-class LinearModel(Model):
+class LinearModel:
 
     def __init__(self, input_size, output_size):
         """

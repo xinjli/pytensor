@@ -1,51 +1,38 @@
 from network.base.operation import *
 
 class Loss(Operation):
+    def loss(self, target_variable):
+        raise NotImplementedError
+
+
+class SoftmaxLoss(Loss):
+    def __init__(self, name="SoftmaxWithLoss", argument=None, graph=None):
+        super(SoftmaxLoss, self).__init__(name, argument, graph)
 
     def forward(self, input_variables):
-        raise NotImplementedError
+        super(SoftmaxLoss, self).forward(input_variables)
 
-    def backward(self):
-        raise NotImplementedError
+        assert(len(input_variables)==1)
 
-    def loss(self, target):
-        raise NotImplementedError
-
-
-class SoftmaxWithLoss(Loss):
-    def __init__(self, name="SoftmaxWithLoss"):
-        self.name = name
-
-        self.input_variable = None
-        self.output_variable = None
-        self.param_variables = []
-
-        self.target = None
-        self.error = None
-        self.batch_size = 0
-
-    def forward(self, input_variable):
-
-        self.input_variable = input_variable
-
-        out_value = softmax(self.input_variable.value)
+        out_value = softmax(self.input_variables[0].value)
         self.output_variable = Variable(out_value)
 
         return self.output_variable
 
-    def loss(self, target):
+    def loss(self, target_variable):
 
-        self.batch_size = len(target)
-        self.target = np.array(target)
-        self.error = cross_entropy_error(self.output_variable.value, self.target)
+        self.target_variable = target_variable
+        self.batch_size = len(self.target_variable.value)
+
+        self.error = cross_entropy_error(self.output_variable.value, target_variable.value)
         return self.error
 
     def backward(self):
 
-        self.input_variable.grad = self.output_variable.value.copy()
-        self.input_variable.grad[np.arange(self.batch_size), self.target] -= 1.0
+        self.input_variables[0].grad = self.output_variable.value.copy()
+        self.input_variables[0].grad[np.arange(self.batch_size), self.target_variable.value] -= 1.0
 
-        self.input_variable.grad *= 1.4426950408889634 # log2(e)
+        self.input_variables[0].grad *= 1.4426950408889634 # log2(e)
 
 
 class SquareErrorLoss(Loss):

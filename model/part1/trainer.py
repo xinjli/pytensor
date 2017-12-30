@@ -1,14 +1,11 @@
-from network.base.graph import *
+from network.base.optimizer import *
 
 class Trainer:
 
     def __init__(self, model):
-        """
-        GraphTrainer takes advantages of graph structure
-        :param model:
-        """
 
         self.model = model
+        self.optimizer = SGD(self.model.parameter)
 
     def train(self, x_train, y_train, x_test=None, y_test=None, epoch=40, iteration=10000):
 
@@ -22,21 +19,20 @@ class Trainer:
             for i in range(len(x_train)):
 
                 # extract data set
-                input_variables = x_train[i]
+                x = x_train[i]
                 y = y_train[i]
 
-                # dynamic forward
+                # regular steps
                 self.model.forward(x)
+
                 cur_loss = self.model.loss(y)
 
                 it_loss += cur_loss
                 loss += cur_loss
 
-                # automatic differentiation
-                self.model.graph.backward()
+                self.model.backward()
 
-                # optimization
-                self.model.graph.optimizer.update()
+                self.optimizer.update()
 
                 if (i+1) % iteration == 0:
                     # report iteration

@@ -51,13 +51,10 @@ def mean_squared_error(y, t):
 
 
 def cross_entropy_error(y, t):
-    if y.ndim == 1:
-        t = t.reshape(1, t.size)  # 次元を増やしている。バッチに増やしている
-        y = y.reshape(1, y.size)
 
-    # 教師データがone-hot-vectorの場合、正解ラベルのインデックスに変換
-    if t.size == y.size:
-        t = t.argmax(axis=1)
+    # add dimension if it is not batch
+    if y.ndim == 1:
+        t = t.reshape(1, t.size)
 
     batch_size = y.shape[0]
     return -np.sum(np.log2(y[np.arange(batch_size), t]))

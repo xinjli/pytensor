@@ -2,6 +2,10 @@ from network.base.operation import *
 
 class Add(Operation):
 
+    def __init__(self, name='add', argument=None, graph=None):
+        super(Add, self).__init__(name, graph, argument)
+
+
     def forward(self, input_variables):
         """
         Add all variables in the input_variable
@@ -9,12 +13,7 @@ class Add(Operation):
         :param input_variables:
         :return:
         """
-
-        self.input_variables = input_variables
-
-        # update dependency
-        for input_variable in self.input_variables:
-            input_variable.dependency_cnt += 1
+        super(Add, self).forward(input_variables)
 
 
         # value for the output variable
@@ -23,7 +22,7 @@ class Add(Operation):
         for input_variable in self.input_variables:
             value += input_variable.value
 
-        self.output_variable = Variable(value, input_ops=self)
+        self.output_variable = Variable(value)
 
         return self.output_variable
 
@@ -148,21 +147,24 @@ class Relu:
         self.input_variable.grad[self.mask] = 0
 
 
-class Sigmoid:
-    def __init__(self, name='Sigmoid'):
-        self.name = name
-        self.input_variable = None
-        self.output_variable = None
+class Sigmoid(Operation):
+    def __init__(self, name='sigmoid', argument=None, graph=None):
+        super(Sigmoid, self).__init__(name, argument, graph)
 
-    def forward(self, input_variable):
-        self.input_variable = input_variable
-        out = sigmoid(self.input_variable.value)
+    def forward(self, input_variables):
+        super(Sigmoid, self).forward(input_variables)
 
-        self.output_variable = Variable(out)
+        # only support one input
+        assert(len(input_variables)==1)
+
+        # compute sigmoid
+        value = sigmoid(self.input_variables[0].value)
+        self.output_variable = Variable(value)
+
         return self.output_variable
 
     def backward(self):
-        self.input_variable.grad += self.output_variable.grad * (1.0 - self.output_variable.value) * self.output_variable.value
+        self.input_variables[0].grad += self.output_variable.grad * (1.0 - self.output_variable.value) * self.output_variable.value
 
 
 class Tanh:
@@ -183,27 +185,42 @@ class Tanh:
         self.input_variable.grad += self.output_variable.grad * (1.0 - self.output_variable.value * self.output_variable.value)
 
 
-class Affine:
-    def __init__(self, input_size, hidden_size, parameter, name='Affine'):
-        self.name = name
+class Affine(Operation):
+    def __init__(self, name="affine", argument=None, graph=None):
+        """
+        Affine transformation: y=wx+b
 
-        self.input_size = input_size
-        self.hidden_size = hidden_size
+        :param argument: [input_size, hidden_size]
+        """
+
+        super(Affine, self).__init__(name, argument, graph)
+
+        # arg should contains two int
+        # one for input_size and the other for hidden_size
+        assert(len(argument)==2)
+
+        self.input_size = argument[0]
+        self.hidden_size = argument[1]
 
         W_name = self.name + "_W"
         b_name = self.name + "_b"
 
-        self.W = parameter.get_variable(W_name, (input_size, hidden_size))
-        self.b = parameter.get_variable(b_name, (hidden_size, ))
+        self.W = self.graph.parameter.get_variable(W_name, (self.input_size, self.hidden_size))
+        self.b = self.graph.parameter.get_variable(b_name, (self.hidden_size, ))
 
-    def forward(self, input_variable):
-        self.input_variable = input_variable
-        out = np.dot(self.input_variable.value, self.W.value) + self.b.value
+    def forward(self, input_variables):
+        super(Affine, self).forward(input_variables)
 
-        self.output_variable = Variable(out)
+        # Affine transformation only transform one tensor
+        assert(len(input_variables) == 1)
+
+        # apply affine transformation
+        value = np.dot(self.input_variables[0].value, self.W.value) + self.b.value
+        self.output_variable = Variable(value)
+
         return self.output_variable
 
     def backward(self):
-        self.input_variable.grad += np.dot(self.output_variable.grad, self.W.value.T)
-        self.W.grad += np.dot(self.input_variable.value.T, self.output_variable.grad)
+        self.input_variables[0].grad += np.dot(self.output_variable.grad, self.W.value.T)
+        self.W.grad += np.dot(self.input_variables[0].value.T, self.output_variable.grad)
         self.b.grad += np.sum(self.output_variable.grad, axis=0)
