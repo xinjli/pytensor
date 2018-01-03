@@ -30,7 +30,7 @@ class Operation:
 
         # register the ops
         if self.graph is not None:
-            self.graph.register(self)
+            self.graph.forward(self)
 
     def backward(self):
         """

@@ -1,6 +1,10 @@
-from network.ops.factory import *
 from network.base.optimizer import *
 from network.base.parameter import *
+from collections import defaultdict
+
+from network.ops.math_ops import *
+from network.ops.loss_ops import *
+from network.ops.array_ops import *
 
 
 class Graph:
@@ -14,12 +18,31 @@ class Graph:
         # graph name
         self.name = name
 
-        # executed operation queue
-        self.ops = []
+        # forward operation queue
+        self.forward_ops = []
 
         # parameter and optimizer
         self.parameter = Parameter()
         self.optimizer = SGD(self.parameter)
+
+        # index for different operations
+        self.ops_index = defaultdict(int)
+
+    def _get_default_operation_name(self, ops_type):
+        """
+        generate default names for an ops
+
+        lower(ops_type)+"_"+ops_index
+
+        :param ops_type:
+        :return:
+        """
+
+        # default name
+        ops_name = ops_type.lower()+"_"+str(self.ops_index[ops_type])
+
+        return ops_name
+
 
     def get_operation(self, ops_type, ops_name=None, ops_argument=None):
         """
@@ -28,19 +51,27 @@ class Graph:
         :return:
 
         """
+        if ops_name is None:
+            ops_name = self._get_default_operation_name(ops_type)
 
-        ops = create_operation(ops_type, ops_name, ops_argument, self)
+        # increment index
+        self.ops_index[ops_type] += 1
+
+        # reflection
+        cls = globals()[ops_type]
+        ops = cls(ops_name, ops_argument, self)
+
         return ops
 
-    def register(self, ops):
+    def forward(self, ops):
         """
-        register an executed ops to the queue (for backward computation)
+        register a forward ops to the queue (for backward computation)
 
         :param ops:
         :return:
         """
 
-        self.ops.append(ops)
+        self.forward_ops.append(ops)
 
 
     def clear(self):
@@ -50,7 +81,7 @@ class Graph:
         :return:
         """
 
-        self.ops = []
+        self.forward_ops = []
 
 
     def backward(self):
@@ -60,7 +91,7 @@ class Graph:
         :return:
         """
 
-        for ops in reversed(self.ops):
+        for ops in reversed(self.forward_ops):
             ops.backward()
 
         # clear all operation
