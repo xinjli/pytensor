@@ -7,21 +7,19 @@ class Graph:
 
     def __init__(self, name):
         """
-        graph is a structure to manage parameter and execution order
+        graph is a data structure to manage parameter and execution order
 
         """
 
         # graph name
         self.name = name
 
-        # executed operation
+        # executed operation queue
         self.ops = []
-        self.ops_num = 0
 
         # parameter and optimizer
         self.parameter = Parameter()
         self.optimizer = SGD(self.parameter)
-
 
     def get_operation(self, ops_type, ops_name=None, ops_argument=None):
         """
@@ -34,17 +32,26 @@ class Graph:
         ops = create_operation(ops_type, ops_name, ops_argument, self)
         return ops
 
-
     def register(self, ops):
         """
-        register an executed ops
+        register an executed ops to the queue (for backward computation)
 
         :param ops:
         :return:
         """
 
         self.ops.append(ops)
-        self.ops_num += 1
+
+
+    def clear(self):
+        """
+        clear operation queue
+
+        :return:
+        """
+
+        self.ops = []
+
 
     def backward(self):
         """
@@ -55,3 +62,6 @@ class Graph:
 
         for ops in reversed(self.ops):
             ops.backward()
+
+        # clear all operation
+        self.clear()

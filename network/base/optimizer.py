@@ -5,7 +5,7 @@ from network.base.parameter import *
 
 
 class SGD:
-    def __init__(self, parameter, lr=0.001):
+    def __init__(self, parameter, lr=0.01):
         self.parameter = parameter
         self.lr = lr
 

@@ -26,28 +26,33 @@ def numerical_gradient_check(model, input_variables, target_variable):
         print("Now checking ", var)
 
         h = 1e-4
-        numerical_grad = np.zeros_like(var)
+        v = var.value
+
+        numerical_grad = np.zeros_like(v)
 
         # compute numerical gradient of this variable
-        it = np.nditer(var, flags=['multi_index'], op_flags=['readwrite'])
+        it = np.nditer(v, flags=['multi_index'], op_flags=['readwrite'])
         while not it.finished:
             idx = it.multi_index
-            tmp_val = var[idx]
+            tmp_val = v[idx]
 
             # f(x+h)
-            var[idx] = float(tmp_val) + h
+            v[idx] = float(tmp_val) + h
             model.forward(input_variables)
             loss_1 = model.loss(target_variable)
 
             # f(x-h)
-            var[idx] = tmp_val - h
+            v[idx] = tmp_val - h
             model.forward(input_variables)
             loss_2 = model.loss(target_variable)
 
             numerical_grad[idx] = (loss_1 - loss_2) / (2 * h)
 
-            var[idx] = tmp_val
+            v[idx] = tmp_val
             it.iternext()
+
+            # clear ops
+            model.graph.clear()
 
         # compare numerical grad with auto grad
         diff = np.sum(var.grad - numerical_grad)

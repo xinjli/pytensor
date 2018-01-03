@@ -10,24 +10,23 @@ class Trainer:
 
         self.model = model
 
-    def train(self, x_train, y_train, x_test=None, y_test=None, epoch=40, iteration=10000):
+    def train(self, x_train, y_train, x_test=None, y_test=None, epoch=40, iteration=1000):
 
         for ii in range(epoch):
 
             loss = 0.0
-            accuracy = 0.0
 
             it_loss = 0.0
 
             for i in range(len(x_train)):
 
                 # extract data set
-                input_variables = x_train[i]
-                y = y_train[i]
+                input_variables = Variable([x_train[i]])
+                target_variable = Variable([y_train[i]])
 
                 # dynamic forward
-                self.model.forward(x)
-                cur_loss = self.model.loss(y)
+                self.model.forward(input_variables)
+                cur_loss = self.model.loss(target_variable)
 
                 it_loss += cur_loss
                 loss += cur_loss
@@ -47,7 +46,6 @@ class Trainer:
 
             print("=== Epoch ", ii, " Summary ===")
             print("train loss: ", loss/len(x_train))
-
 
             test_loss = 0.0
             for i in range(len(x_test)):

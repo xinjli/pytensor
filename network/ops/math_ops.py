@@ -84,26 +84,24 @@ class Multiply(Operation):
             input_variable.backward()
 
 
-class Matmul:
+class Matmul(Operation):
+
+    def __init__(self, name='matmul', argument=None, graph=None):
+        super(Matmul, self).__init__(name, argument, graph)
 
     def forward(self, input_variables):
+
+        super(Matmul, self).forward(input_variables)
 
         # only multiplication of two elements is supported now
         assert(len(input_variables)==2)
 
-        self.input_variables = input_variables
-
-        # update dependency
-        for input_variable in self.input_variables:
-            input_variable.dependency_cnt += 1
-
         self.x = input_variables[0]
         self.y = input_variables[1]
 
-        self.input_variable = input_variables
         out = np.dot(self.x.value, self.y.value)
 
-        self.output_variable = Variable(out, input_ops=self)
+        self.output_variable = Variable(out)
         return self.output_variable
 
     def backward(self):
@@ -111,10 +109,6 @@ class Matmul:
         # update gradient
         self.x.grad += np.dot(self.output_variable.grad, self.y.value.T)
         self.y.grad += np.dot(self.x.value.T, self.output_variable.grad)
-
-        # back prop
-        for input_variable in self.input_variables:
-            input_variable.backward()
 
 
 class Relu:
@@ -148,31 +142,24 @@ class Relu:
 
 
 class Sigmoid(Operation):
+
     def __init__(self, name='sigmoid', argument=None, graph=None):
         super(Sigmoid, self).__init__(name, argument, graph)
 
     def forward(self, input_variables):
         super(Sigmoid, self).forward(input_variables)
 
-        # only support one input
-        assert(len(input_variables)==1)
-
         # compute sigmoid
-        value = sigmoid(self.input_variables[0].value)
+        value = sigmoid(self.input_variables.value)
         self.output_variable = Variable(value)
 
         return self.output_variable
 
     def backward(self):
-        self.input_variables[0].grad += self.output_variable.grad * (1.0 - self.output_variable.value) * self.output_variable.value
+        self.input_variables.grad += self.output_variable.grad * (1.0 - self.output_variable.value) * self.output_variable.value
 
 
-class Tanh:
-
-    def __init__(self, name="Tanh"):
-        self.name = name
-        self.input_variable = None
-        self.output_variable = None
+class Tanh(Operation):
 
     def forward(self, input_variable):
         self.input_variable = input_variable
@@ -211,16 +198,16 @@ class Affine(Operation):
     def forward(self, input_variables):
         super(Affine, self).forward(input_variables)
 
-        # Affine transformation only transform one tensor
-        assert(len(input_variables) == 1)
+        # check input size
+        assert(input_variables.value.shape[1] == self.input_size)
 
         # apply affine transformation
-        value = np.dot(self.input_variables[0].value, self.W.value) + self.b.value
+        value = np.dot(self.input_variables.value, self.W.value) + self.b.value
         self.output_variable = Variable(value)
 
         return self.output_variable
 
     def backward(self):
-        self.input_variables[0].grad += np.dot(self.output_variable.grad, self.W.value.T)
-        self.W.grad += np.dot(self.input_variables[0].value.T, self.output_variable.grad)
+        self.input_variables.grad += np.dot(self.output_variable.grad, self.W.value.T)
+        self.W.grad += np.dot(self.input_variables.value.T, self.output_variable.grad)
         self.b.grad += np.sum(self.output_variable.grad, axis=0)

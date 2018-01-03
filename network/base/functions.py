@@ -11,7 +11,7 @@ def step_function(x):
 
 
 def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+    return 1.0 / (1.0 + np.exp(-x))
 
 
 def sigmoid_grad(x):
@@ -53,10 +53,11 @@ def mean_squared_error(y, t):
 def cross_entropy_error(y, t):
 
     # add dimension if it is not batch
-    if y.ndim == 1:
-        t = t.reshape(1, t.size)
+    #if y.ndim == 1:
+    #    y = y.reshape(1, y.size)
 
     batch_size = y.shape[0]
+
     return -np.sum(np.log2(y[np.arange(batch_size), t]))
 
 

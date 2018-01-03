@@ -12,9 +12,7 @@ class SoftmaxLoss(Loss):
     def forward(self, input_variables):
         super(SoftmaxLoss, self).forward(input_variables)
 
-        assert(len(input_variables)==1)
-
-        out_value = softmax(self.input_variables[0].value)
+        out_value = softmax(self.input_variables.value)
         self.output_variable = Variable(out_value)
 
         return self.output_variable
@@ -29,28 +27,30 @@ class SoftmaxLoss(Loss):
 
     def backward(self):
 
-        self.input_variables[0].grad = self.output_variable.value.copy()
-        self.input_variables[0].grad[np.arange(self.batch_size), self.target_variable.value] -= 1.0
+        self.input_variables.grad = self.output_variable.value.copy()
+        self.input_variables.grad[np.arange(self.batch_size), self.target_variable.value] -= 1.0
 
-        self.input_variables[0].grad *= 1.4426950408889634 # log2(e)
+        self.input_variables.grad *= 1.4426950408889634 # log2(e)
 
 
-class SquareErrorLoss(Loss):
+class SquareLoss(Loss):
 
-    def __init__(self, name="SquareErrorLoss"):
-        self.name = name
+    def __init__(self, name="SquareLoss", argument=None, graph=None):
+        super(SquareLoss, self).__init__(name, argument, graph)
 
-    def forward(self, input_variable):
-        self.input_variable = input_variable
+    def forward(self, input_variables):
+        super(SquareLoss, self).forward(input_variables)
 
-    def loss(self, target):
-        self.target = target
-        loss_val =  mean_squared_error(self.input_variable.value, self.target.value)
+        out_value = softmax(self.input_variables.value)
+        self.output_variable = Variable(out_value)
+
+        return self.output_variable
+
+    def loss(self, target_variable):
+        self.target_variable = target_variable
+        loss_val =  mean_squared_error(self.input_variables.value, self.target_variable.value)
         return loss_val
 
     def backward(self):
         # update grad
-        self.input_variable.grad = self.input_variable.value - self.target.value
-
-        # back prop
-        self.input_variable.backward()
+        self.input_variables.grad = self.input_variables.value - self.target_variable.value
