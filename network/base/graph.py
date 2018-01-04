@@ -28,31 +28,15 @@ class Graph:
         # index for different operations
         self.ops_index = defaultdict(int)
 
-    def _get_default_operation_name(self, ops_type):
-        """
-        generate default names for an ops
-
-        lower(ops_type)+"_"+ops_index
-
-        :param ops_type:
-        :return:
-        """
-
-        # default name
-        ops_name = ops_type.lower()+"_"+str(self.ops_index[ops_type])
-
-        return ops_name
-
-
-    def get_operation(self, ops_type, ops_name=None, ops_argument=None):
+    def get_operation(self, ops_type, ops_argument=None):
         """
         create operation
 
         :return:
 
         """
-        if ops_name is None:
-            ops_name = self._get_default_operation_name(ops_type)
+        # generate the default name
+        ops_name = ops_type.lower()+"_"+str(self.ops_index[ops_type])
 
         # increment index
         self.ops_index[ops_type] += 1
