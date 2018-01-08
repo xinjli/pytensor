@@ -15,7 +15,6 @@ class Add(Operation):
         """
         super(Add, self).forward(input_variables)
 
-
         # value for the output variable
         value = np.zeros_like(self.input_variables[0])
 
@@ -35,10 +34,13 @@ class Add(Operation):
 
         for input_variable in self.input_variables:
             input_variable.grad += self.output_variable.grad
-            input_variable.backward()
 
 
 class Multiply(Operation):
+
+    def __init__(self, name='multiply', argument=None, graph=None):
+        super(Multiply, self).__init__(name, graph, argument)
+
 
     def forward(self, input_variables):
         """
@@ -47,15 +49,12 @@ class Multiply(Operation):
         :param input_variables:
         :return:
         """
+        super(Multiply, self).forward(input_variables)
 
         # only multiplication of two elements is supported now
         assert(len(input_variables)==2)
 
         self.input_variables = input_variables
-
-        # update dependency
-        for input_variable in self.input_variables:
-            input_variable.dependency_cnt += 1
 
         # validate both input_variables have same shape
         self.x = input_variables[0]
@@ -64,7 +63,7 @@ class Multiply(Operation):
 
         # value for the output variable
         value = np.multiply(self.x, self.y)
-        self.output_variable = Variable(value, input_ops=self)
+        self.output_variable = Variable(value)
 
         return self.output_variable
 
@@ -79,10 +78,6 @@ class Multiply(Operation):
         self.x.grad += np.multiply(self.output_variable.grad, self.y.value)
         self.y.grad += np.multiply(self.output_variable.grad, self.x.value)
 
-        # back prop
-        for input_variable in self.input_variables:
-            input_variable.backward()
-
 
 class Matmul(Operation):
 
@@ -90,7 +85,6 @@ class Matmul(Operation):
         super(Matmul, self).__init__(name, argument, graph)
 
     def forward(self, input_variables):
-
         super(Matmul, self).forward(input_variables)
 
         # only multiplication of two elements is supported now

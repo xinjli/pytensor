@@ -18,6 +18,9 @@ class Graph:
         # graph name
         self.name = name
 
+        # state
+        self.train_state = True
+
         # forward operation queue
         self.forward_ops = []
 
@@ -47,6 +50,27 @@ class Graph:
 
         return ops
 
+
+    def train(self):
+        """
+        set the state to the training state.
+        In the training state, the forward operation queue will be enabled for backprop.
+        operations such as dropout and batch norm will be enabled
+
+        :return:
+        """
+        self.train_state = True
+
+    def eval(self):
+        """
+        set the state to the eval state
+
+        :return:
+        """
+
+        self.train_state = False
+
+
     def forward(self, ops):
         """
         register a forward ops to the queue (for backward computation)
@@ -55,7 +79,8 @@ class Graph:
         :return:
         """
 
-        self.forward_ops.append(ops)
+        if self.train_state:
+            self.forward_ops.append(ops)
 
 
     def clear(self):
