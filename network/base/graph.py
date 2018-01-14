@@ -21,7 +21,7 @@ class Graph:
         # state
         self.train_state = True
 
-        # forward operation queue
+        # forward operation stack
         self.forward_ops = []
 
         # parameter and optimizer
@@ -54,7 +54,7 @@ class Graph:
     def train(self):
         """
         set the state to the training state.
-        In the training state, the forward operation queue will be enabled for backprop.
+        In the training state, the forward operation stack will be enabled for backprop.
         operations such as dropout and batch norm will be enabled
 
         :return:
@@ -73,7 +73,7 @@ class Graph:
 
     def forward(self, ops):
         """
-        register a forward ops to the queue (for backward computation)
+        register a forward ops to the stack (for backward computation)
 
         :param ops:
         :return:
@@ -85,7 +85,7 @@ class Graph:
 
     def clear(self):
         """
-        clear operation queue
+        clear operation stack
 
         :return:
         """

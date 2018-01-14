@@ -18,7 +18,6 @@ def numerical_gradient_check(model, input_variables, target_variable):
     model.loss(target_variable)
     model.graph.backward()
 
-
     # variables we need to check
     variable_dict = model.graph.parameter.variable_dict
 
