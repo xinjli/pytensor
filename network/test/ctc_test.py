@@ -1,4 +1,4 @@
-from network.base.ctc import *
+from network.temp.ctc import *
 from network.base.ctc_decoder import *
 from network.base.variable import *
 from network.base.gradient import *

@@ -4,6 +4,9 @@ from collections import defaultdict
 
 from network.ops.math_ops import *
 from network.ops.loss_ops import *
+from network.ops.embedding_ops import *
+from network.ops.rnn_ops import *
+from network.ops.lstm_ops import *
 from network.ops.array_ops import *
 
 
@@ -31,7 +34,7 @@ class Graph:
         # index for different operations
         self.ops_index = defaultdict(int)
 
-    def get_operation(self, ops_type, ops_argument=None):
+    def get_operation(self, ops_type, ops_argument=None, ops_name=None):
         """
         create operation
 
@@ -39,7 +42,8 @@ class Graph:
 
         """
         # generate the default name
-        ops_name = ops_type.lower()+"_"+str(self.ops_index[ops_type])
+        if ops_name is None:
+            ops_name = ops_type.lower()+"_"+str(self.ops_index[ops_type])
 
         # increment index
         self.ops_index[ops_type] += 1
@@ -49,6 +53,9 @@ class Graph:
         ops = cls(ops_name, ops_argument, self)
 
         return ops
+
+    def get_variable(self, name, shape):
+        return self.parameter.get_variable(name, shape)
 
 
     def train(self):

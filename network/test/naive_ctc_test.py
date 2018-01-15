@@ -1,5 +1,4 @@
-from network.base.ctc import *
-import numpy as np
+from network.temp.ctc import *
 
 if __name__ == "__main__":
 

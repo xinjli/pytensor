@@ -54,7 +54,7 @@ class Parameter:
         # embedding is implemented as a list of variables
         # this is for efficient update
         for i in range(vocab_size):
-            embedding = Variable(np.random.uniform(-np.sqrt(1./word_dim), np.sqrt(1./word_dim), word_dim))
+            embedding = Variable([np.random.uniform(-np.sqrt(1./word_dim), np.sqrt(1./word_dim), word_dim)])
             self.embeddings.append(embedding)
 
         return self.embeddings

@@ -3,7 +3,7 @@ from network.base.operation import *
 class Add(Operation):
 
     def __init__(self, name='add', argument=None, graph=None):
-        super(Add, self).__init__(name, graph, argument)
+        super(Add, self).__init__(name, argument, graph)
 
 
     def forward(self, input_variables):
@@ -39,7 +39,7 @@ class Add(Operation):
 class Multiply(Operation):
 
     def __init__(self, name='multiply', argument=None, graph=None):
-        super(Multiply, self).__init__(name, graph, argument)
+        super(Multiply, self).__init__(name, argument, graph)
 
 
     def forward(self, input_variables):
@@ -155,8 +155,13 @@ class Sigmoid(Operation):
 
 class Tanh(Operation):
 
-    def forward(self, input_variable):
-        self.input_variable = input_variable
+    def __init__(self, name='tanh', argument=None, graph=None):
+        super(Tanh, self).__init__(name, argument, graph)
+
+    def forward(self, input_variables):
+        super(Tanh, self).forward(input_variables)
+
+        self.input_variable = input_variables
         out = np.tanh(self.input_variable.value)
 
         self.output_variable = Variable(out)
@@ -180,8 +185,8 @@ class Affine(Operation):
         # one for input_size and the other for hidden_size
         assert(len(argument)==2)
 
-        self.input_size = argument[0]
-        self.hidden_size = argument[1]
+        self.input_size = argument['input_size']
+        self.hidden_size = argument['hidden_size']
 
         W_name = self.name + "_W"
         b_name = self.name + "_b"

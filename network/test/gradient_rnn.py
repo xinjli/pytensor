@@ -1,9 +1,5 @@
-from network.base.rnn import *
-from network.base.parameter import *
-from network.base.operation import *
+from network.ops.rnn import *
 from network.base.optimizer import *
-from network.base.gradient import *
-from network.base.gradient import *
 from common.logger import *
 
 import numpy as np

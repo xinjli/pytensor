@@ -1,9 +1,32 @@
 import numpy as np
 
+class LongVariable:
+    """
+    LongVariable is a type of variable to keep integers
+
+    """
+
+    def __init__(self, value, name='LongVariable', trainable=False):
+        """
+        :param value: long value
+        :param name:
+        :param trainable:
+        """
+
+        self.value = np.array(value, dtype='int64')
+        self.name = name
+
+    def clear_grad(self):
+        return
+
+    def reshape(self, array):
+        return
+
+
 class Variable:
     """
     Variable is the basic structure in the computation graph
-    It holds value for forward computation and grad for
+    It holds value for forward computation and grad for backward propagation
 
     """
 
