@@ -47,18 +47,14 @@ class Trainer:
 
                 if (i+1) % iteration == 0:
                     # report iteration
-                    print("=== Epoch: ", ii, " Iteration: ", i+1, " iteration loss: ", it_loss / it_word_cnt, " ===")
+                    print("\repoch {} iteration ({}/{}) : loss {} ".format(ii,i+1,len(x_train), it_loss/it_word_cnt), end='')
 
                     # clear ce loss
                     it_loss = 0.0
                     it_word_cnt = 0
 
-            print("=== Epoch ", ii, " Summary ===")
-
-            loss /= word_cnt
-            print("Perplexity: ", 2**loss)
-
-            # self.test(x_test, y_test)
+            train_ppl = 2**(loss / word_cnt)
+            print("epoch {}:  train_ppl ".format(ii, train_ppl))
 
     def test(self, x_test, y_test):
 

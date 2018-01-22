@@ -8,9 +8,9 @@ class MLP:
         self.graph = Graph("MLP")
 
         # make graph
-        self.affine1 = self.graph.get_operation('Affine', [input_size, hidden_size])
+        self.affine1 = self.graph.get_operation('Affine', {'input_size': input_size, 'hidden_size': hidden_size})
         self.sigmoid = self.graph.get_operation('Sigmoid')
-        self.affine2 = self.graph.get_operation('Affine', [hidden_size, output_size])
+        self.affine2 = self.graph.get_operation('Affine', {'input_size': hidden_size, 'hidden_size': output_size})
         self.softmaxloss = self.graph.get_operation('SoftmaxLoss')
 
     def forward(self, input_variable):

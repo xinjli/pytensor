@@ -12,14 +12,13 @@ class Trainer:
 
         self.model = model
 
-    def train(self, x_train, y_train, x_test=None, y_test=None, epoch=40, iteration=10000):
+    def train(self, x_train, y_train, x_test=None, y_test=None, epoch=40):
 
         for ii in range(epoch):
 
             self.model.graph.train()
 
             loss = 0.0
-            it_loss = 0.0
 
             for i in range(len(x_train)):
 
@@ -29,10 +28,9 @@ class Trainer:
 
                 # dynamic forward
                 self.model.forward(input_variables)
-                cur_loss = self.model.loss(target_variable)
 
-                it_loss += cur_loss
-                loss += cur_loss
+                # loss
+                loss += self.model.loss(target_variable)
 
                 # automatic differentiation
                 self.model.graph.backward()
@@ -40,17 +38,9 @@ class Trainer:
                 # optimization
                 self.model.graph.optimizer.update()
 
-                if (i+1) % iteration == 0:
-                    # report iteration
-                    print("=== Epoch: ", ii, " Iteration: ", i+1, " iteration loss: ", it_loss / iteration, " ===")
 
-                    # clear ce loss
-                    it_loss = 0.0
-
-            print("=== Epoch ", ii, " Summary ===")
-            print("train loss: ", loss/len(x_train))
-
-            self.test(x_test, y_test)
+            accuracy = self.test(x_test, y_test)
+            print("\repoch {}: loss {}, acc {}".format(ii, loss, accuracy), end='')
 
     def test(self, x_test, y_test):
 
@@ -68,4 +58,4 @@ class Trainer:
             if y == y_test[i]:
                 acc_cnt += 1.0
 
-        print("test accuracy ", acc_cnt / all_cnt)
+        return acc_cnt / all_cnt

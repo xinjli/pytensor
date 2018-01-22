@@ -17,9 +17,6 @@ class Trainer:
         for ii in range(epoch):
 
             loss = 0.0
-            accuracy = 0.0
-
-            it_loss = 0.0
 
             for i in range(len(x_train)):
 
@@ -27,28 +24,19 @@ class Trainer:
                 input_variables = Variable([x_train[i]])
                 target_variable = Variable([y_train[i]])
 
-                # dynamic forward
+                # forward
                 self.model.forward(input_variables)
-                cur_loss = self.model.loss(target_variable)
 
-                it_loss += cur_loss
-                loss += cur_loss
+                # loss
+                loss += self.model.loss(target_variable)
 
+                # backward
                 self.model.backward()
 
                 self.optimizer.update()
 
-                if (i+1) % iteration == 0:
-                    # report iteration
-                    print("=== Epoch: ", ii, " Iteration: ", i+1, " train loss: ", it_loss / iteration, " ===")
-
-                    # clear ce loss
-                    it_loss = 0.0
-
-                    self.test(x_test, y_test)
-
-            print("=== Epoch ", ii, " Summary ===")
-            self.test(x_test, y_test)
+            accuracy = self.test(x_test, y_test)
+            print("\repoch {}: loss {}, acc {}".format(ii, loss, accuracy), end='')
 
 
     def test(self, x_test, y_test):
@@ -65,4 +53,4 @@ class Trainer:
             if y == y_test[i]:
                 acc_cnt += 1.0
 
-        print("test accuracy ", acc_cnt / all_cnt)
+        return acc_cnt/all_cnt

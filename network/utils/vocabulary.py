@@ -217,7 +217,6 @@ class Vocabulary:
         """
 
         # update the frequency for words
-        print(self.word_freq.items())
         sort_word_freq = sorted(self.word_freq.items(), key=lambda x:x[1], reverse=True)
 
         # unique word count
