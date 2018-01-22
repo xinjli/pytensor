@@ -45,7 +45,7 @@ Following operations are implemented currently or planned to become available
 ## Tutorial
 
 I implemented three models under the tutorial directory to show how to use the framework.
-Each model will be introduced as well as the framework itself in my [blog](www.xinjianl.com)
+Each model will be introduced as well as the framework itself in my [blog](http://www.xinjianl.com)
 
 
  
