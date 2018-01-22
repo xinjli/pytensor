@@ -105,25 +105,25 @@ class Matmul(Operation):
         self.y.grad += np.dot(self.x.value.T, self.output_variable.grad)
 
 
-class Relu:
-    def __init__(self, name="Relu"):
-        self.name = name
+class Relu(Operation):
+    def __init__(self, name="Relu", argument=None, graph=None):
+        super(Relu, self).__init__(name, argument, graph)
+
         self.mask = None
 
-    def forward(self, input_variable):
+    def forward(self, input_variables):
         """
         :param input_variable:
         :return:
         """
 
-        # remember input variable
-        self.input_variable = input_variable
+        super(Sigmoid, self).forward(input_variables)
 
         # compute mask
-        self.mask = (input_variable.value <= 0)
+        self.mask = (input_variables.value <= 0)
 
         # create output variable
-        out = input_variable.value.copy()
+        out = input_variables.value.copy()
         out[self.mask] = 0
         self.output_variable = Variable(out)
 
@@ -131,8 +131,8 @@ class Relu:
         return self.output_variable
 
     def backward(self):
-        self.input_variable.grad = self.output_variable.grad
-        self.input_variable.grad[self.mask] = 0
+        self.input_variables.grad = self.output_variable.grad
+        self.input_variables.grad[self.mask] = 0
 
 
 class Sigmoid(Operation):
