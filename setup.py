@@ -2,7 +2,7 @@ from setuptools import setup,find_packages
 
 setup(
    name='pytensor',
-   version='0.101',
+   version='0.1.0',
    description='A deep learning framework using pure numpy',
    author='Xinjian Li',
    author_email='lixinjian1217@gmail.com',

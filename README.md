@@ -28,7 +28,7 @@ To install from pypi:
 ## Tutorial
 
 I implemented three models under the tutorial directory to show how to use the framework.
-Each model will be introduced as well as the framework itself in my [blog](http://www.xinjianl.c    om)
+Each model will be introduced as well as the framework itself in my [blog](http://www.xinjianl.com)
 
 ### Linear Model
 Here we show a predefined model described [here](http://www.xinjianl.com/blog/2017/12/20/implement-a-deep-learning-framework-with-pure-numpy/)
