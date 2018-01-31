@@ -34,22 +34,23 @@ Each model will be introduced as well as the framework itself in my [blog](http:
 Here we show a predefined model described [here](http://www.xinjianl.com/blog/2017/12/20/implement-a-deep-learning-framework-with-pure-numpy/)
 
 
-    python
-    from pytensor.tutorial.part2.linear import *
+```python
+from pytensor.tutorial.part2.linear import *
   
-    # load digit data for multiclass classification
-    data_train, data_test, label_train, label_test = digit_dataset()
+# load digit data for multiclass classification
+data_train, data_test, label_train, label_test = digit_dataset()
 
-    # create a predefined linear model
-    # - input dimension: 64
-    # - target dimension: 10
-    model = Linear(64, 10)
+# create a predefined linear model
+# - input dimension: 64
+# - target dimension: 10
+model = Linear(64, 10)
 
-    # create a trainer for the model
-    trainer = Trainer(model)
+# create a trainer for the model
+trainer = Trainer(model)
 
-    # train 40 epoch
-    trainer.train(data_train, label_train, data_test, label_test, 40)
+# train 40 epoch
+trainer.train(data_train, label_train, data_test, label_test, 40)
+```
 
 ### Operations
 
