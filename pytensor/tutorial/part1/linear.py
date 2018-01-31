@@ -1,6 +1,6 @@
 from network.ops.math_ops import *
 from network.ops.loss_ops import *
-from tutorial.part1.trainer import *
+from pytensor.tutorial.part1.trainer import *
 from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
 

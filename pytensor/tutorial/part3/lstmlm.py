@@ -2,9 +2,9 @@ from network.base.variable import *
 from network.base.graph import *
 from network.base.gradient import *
 from data.ptb import *
-from tutorial.part3.trainer import *
+from pytensor.tutorial.part3.trainer import *
 
-class RNNLM:
+class LSTMLM:
 
     def __init__(self, vocab_size, input_size, hidden_size):
 
@@ -22,7 +22,7 @@ class RNNLM:
         self.num_steps = 0
 
         # graph
-        self.graph = Graph('RNN')
+        self.graph = Graph('LSTM')
 
         # word embedding
         embed_argument = {'vocab_size': self.vocab_size, 'embed_size': self.input_size}
@@ -30,7 +30,7 @@ class RNNLM:
 
         # rnn
         rnn_argument = {'input_size': self.input_size, 'hidden_size': self.hidden_size, 'max_num_steps': self.max_num_steps}
-        self.rnn = self.graph.get_operation('RNN', rnn_argument)
+        self.rnn = self.graph.get_operation('LSTM', rnn_argument)
 
         # affines
         affine_argument = {'input_size': self.hidden_size, 'hidden_size': self.output_size}
@@ -83,7 +83,7 @@ def rnn_gradient():
     input_lst =  [np.random.randint(5) for i in range(10)]
     output_lst = [np.random.randint(5) for i in range(10)]
 
-    model = RNNLM(5, 5, 10)
+    model = LSTMLM(5, 5, 10)
     numerical_gradient_check(model, input_lst, output_lst)
 
 
@@ -100,15 +100,14 @@ def rnn_train():
         input_lst.append(input_ids)
         output_lst.append(output_ids)
 
-
-    model = RNNLM(10000, 100, 100)
+    model = LSTMLM(10000, 100, 100)
     trainer = Trainer(model)
 
     trainer.train(input_lst, output_lst, None, None)
 
 
 if __name__ == '__main__':
-    #rnn_gradient()
-    rnn_train()
+    rnn_gradient()
+    #rnn_train()
 
 

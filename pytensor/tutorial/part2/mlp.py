@@ -1,4 +1,4 @@
-from tutorial.part2.trainer import *
+from pytensor.tutorial.part2.trainer import *
 from data.digit_dataset import *
 
 
