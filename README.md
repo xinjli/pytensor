@@ -19,9 +19,9 @@ To install From this repository (recommended):
 	git clone https://github.com/xinjli/pytensor
 	python setup.py install
 
-This `project is on pypi <https://pypi.python.org/pypi/pytensor>`
+This project is also on [pypi](https://pypi.python.org/pypi/pytensor>)
 
-To install from pypi::
+To install from pypi:
 
 	pip install pytensor
 
