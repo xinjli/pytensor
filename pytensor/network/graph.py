@@ -1,8 +1,7 @@
 from pytensor.network.optimizer import *
-from pytensor.network.parameter import *
 from collections import defaultdict
 
-from pytensor.ops.array_ops import *
+from pytensor.ops import *
 
 
 class Graph:
