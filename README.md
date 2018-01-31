@@ -12,6 +12,20 @@ The framework is a toy framework implemented by pure numpy.
 * Auto differentiation is supported, so it is not necessary to implement backward computation by yourself
 * Common operations used in NLP and speech is available such as embedding and lstm operations.  
 
+# Install
+
+To install From this repository (recommended):
+
+	git clone https://github.com/xinjli/pytensor
+	python setup.py install
+
+This `project is on pypi <https://pypi.python.org/pypi/pytensor>`
+
+To install from pypi::
+
+	pip install pytensor
+
+
 ## Operations
 
 Following operations are implemented currently or planned to become available
