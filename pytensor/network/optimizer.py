@@ -1,7 +1,7 @@
 # coding: utf-8
 import numpy as np
 import logging
-from network.base.parameter import *
+from pytensor.network.parameter import *
 
 
 class SGD:

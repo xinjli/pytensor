@@ -1,4 +1,4 @@
-from network.base.operation import *
+from pytensor.network.operation import *
 
 class Loss(Operation):
     def loss(self, target_variable):

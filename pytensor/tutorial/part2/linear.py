@@ -1,5 +1,5 @@
 from pytensor.tutorial.part2.trainer import *
-from data.digit_dataset import *
+from pytensor.data.digit_dataset import *
 
 
 class Linear:

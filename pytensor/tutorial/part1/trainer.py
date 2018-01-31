@@ -1,4 +1,4 @@
-from network.base.optimizer import *
+from pytensor.network.optimizer import *
 
 class Trainer:
 

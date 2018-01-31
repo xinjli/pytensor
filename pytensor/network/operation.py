@@ -1,6 +1,6 @@
-from network.base.variable import *
-from network.base.functions import *
-from network.base.parameter import *
+from pytensor.network.variable import *
+from pytensor.network.functions import *
+from pytensor.network.parameter import *
 
 class Operation:
     def __init__(self, name, arguments, graph):

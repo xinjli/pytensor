@@ -1,5 +1,5 @@
-from network.base.graph import *
-from network.base.gradient import *
+from pytensor.network.graph import *
+from pytensor.network.gradient import *
 
 
 class Trainer:

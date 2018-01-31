@@ -1,6 +1,6 @@
-from network.base.variable import *
-from network.base.parameter import *
-from network.base.operation import *
+from pytensor.network.variable import *
+from pytensor.network.parameter import *
+from pytensor.network.operation import *
 
 class RNNCell(Operation):
 

@@ -1,13 +1,8 @@
-from network.base.optimizer import *
-from network.base.parameter import *
+from pytensor.network.optimizer import *
+from pytensor.network.parameter import *
 from collections import defaultdict
 
-from network.ops.math_ops import *
-from network.ops.loss_ops import *
-from network.ops.embedding_ops import *
-from network.ops.rnn_ops import *
-from network.ops.lstm_ops import *
-from network.ops.array_ops import *
+from pytensor.ops.array_ops import *
 
 
 class Graph:

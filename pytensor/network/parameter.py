@@ -1,4 +1,4 @@
-from network.base.variable import *
+from pytensor.network.variable import *
 import numpy as np
 import pickle
 

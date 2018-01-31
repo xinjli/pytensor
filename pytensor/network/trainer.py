@@ -1,4 +1,4 @@
-from network.base.graph import *
+from pytensor.network.base.graph import *
 
 class Trainer:
 
