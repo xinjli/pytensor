@@ -1,4 +1,4 @@
-# pytensor: A Deep Learning framework with pure numpy
+# pytensor: A Deep Learning Framework with pure numpy
 
 pytensor is a deep learning framework implemented with pure numpy.
 
