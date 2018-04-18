@@ -1,4 +1,4 @@
-from network.utils.vocabulary import *
+from pytensor.utils.vocabulary import *
 import os
 
 def load_ptb():
