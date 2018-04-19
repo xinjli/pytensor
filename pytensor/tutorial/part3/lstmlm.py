@@ -107,7 +107,7 @@ def rnn_train():
 
 
 if __name__ == '__main__':
-    rnn_gradient()
-    #rnn_train()
+    #rnn_gradient()
+    rnn_train()
 
 

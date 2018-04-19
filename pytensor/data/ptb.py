@@ -2,8 +2,9 @@ from pytensor.utils.vocabulary import *
 import os
 
 def load_ptb():
-    file_path = '../../data/corpus/ptb.train.txt'
-    raw_sentences = open(file_path, 'r').readlines()
+    file_path=os.path.dirname(os.path.abspath(__file__))
+    ptb_file_path = file_path+'/corpus/ptb.train.txt'
+    raw_sentences = open(ptb_file_path, 'r').readlines()
 
     sentences = []
     for raw_sentence in raw_sentences:
