@@ -90,6 +90,8 @@ Sample tests are available in pytensor.test. You can run those existing tests wi
  
 	python -m pytensor.test.test_linear
 	python -m pytensor.test.test_mlp
+	python -m pytensor.test.test_rnn
+	python -m pytensor.test.test_lstm
 
 
 
