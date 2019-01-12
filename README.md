@@ -80,10 +80,16 @@ Following operations are implemented currently or planned to become available
   
 * Speech-related operations
   * CTC (not included yet, prototype is available under the ctc branch)
+  
+### Tests
+
+You can implement unit test to validate your model and operations are working.
+
+Sample tests are available in pytensor.test. You can run those existing tests with following commands
 
  
- 
-
+	python -m pytensor.test.test_linear
+	python -m pytensor.test.test_mlp
 
 
 
