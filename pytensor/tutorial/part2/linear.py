@@ -20,18 +20,6 @@ class Linear:
         return self.softmaxloss.loss(target_variable)
 
 
-def linear_gradient():
-    """
-    validate model's gradient with numerical methods
-
-    :return:
-    """
-
-    data_train, data_test, label_train, label_test = digit_dataset()
-    model = Linear(64,10)
-
-    numerical_gradient_check(model, Variable([data_train[0]]), Variable([label_train[0]]))
-
 
 def linear_train():
     data_train, data_test, label_train, label_test = digit_dataset()

@@ -1,6 +1,3 @@
-from pytensor.network.variable import *
-from pytensor.network.graph import *
-from pytensor.network.gradient import *
 from pytensor.data.ptb import *
 from pytensor.tutorial.part3.trainer import *
 

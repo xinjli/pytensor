@@ -1,6 +1,6 @@
-from pytensor.tutorial.part2.trainer import *
+from pytensor import *
 from pytensor.data.digit_dataset import *
-
+from pytensor.test.common import *
 
 class MLP:
 
@@ -24,14 +24,25 @@ class MLP:
         return self.softmaxloss.loss(target_variable)
 
 
-def mlp_train():
 
-    data_train, data_test, label_train, label_test = digit_dataset()
-    model = MLP(64, 30, 10)
+class TestMLPModel(unittest.TestCase):
 
-    trainer = Trainer(model)
-    trainer.train(data_train, label_train, data_test, label_test, 40)
+    def test_gradient(self):
+        """
+        validate model's gradient with numerical methods
 
+        :return:
+        """
+
+        data_train, data_test, label_train, label_test = digit_dataset()
+        model = MLP(64, 30, 10)
+
+        grad_info = gradient_generator(model, Variable([data_train[0]]), Variable([label_train[0]]))
+
+        for var, expected_grad, actual_grad in grad_info:
+            diff = np.sum(np.abs(expected_grad - actual_grad))
+            print("Now checking ", var)
+            self.assertLessEqual(diff, 0.001)
 
 if __name__ == '__main__':
-    mlp_train()
+    unittest.main()
