@@ -1,5 +1,6 @@
-from pytensor.data.ptb import *
-from pytensor.tutorial.part3.trainer import *
+from pytensor import *
+from pytensor.data.digit_dataset import *
+from pytensor.test.common import *
 
 class LSTMLM:
 
@@ -70,26 +71,27 @@ class LSTMLM:
         return ce_loss
 
 
-def lstm_train():
 
-    sentences, vocab = load_ptb()
-    input_lst = []
-    output_lst = []
+class TestLSTMModel(unittest.TestCase):
 
-    for sentence in sentences:
-        input_ids = sentence[:-1]
-        output_ids = sentence[1:]
+    def test_gradient(self):
+        """
+        validate model's gradient with numerical methods
 
-        input_lst.append(input_ids)
-        output_lst.append(output_ids)
+        :return:
+        """
 
-    model = LSTMLM(10000, 100, 100)
-    trainer = Trainer(model)
+        input_lst = [np.random.randint(5) for i in range(10)]
+        output_lst = [np.random.randint(5) for i in range(10)]
 
-    trainer.train(input_lst, output_lst, None, None)
+        model = LSTMLM(5, 5, 10)
 
+        grad_info = gradient_generator(model, input_lst, output_lst)
+
+        for var, expected_grad, actual_grad in grad_info:
+            diff = np.sum(np.abs(expected_grad - actual_grad))
+            print("Now checking ", var)
+            self.assertLessEqual(diff, 0.001)
 
 if __name__ == '__main__':
-    lstm_train()
-
-
+    unittest.main()

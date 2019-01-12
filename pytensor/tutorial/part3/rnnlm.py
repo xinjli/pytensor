@@ -70,20 +70,6 @@ class RNNLM:
         return ce_loss
 
 
-def rnn_gradient():
-    """
-    validate model's gradient with numerical methods
-
-    :return:
-    """
-
-    input_lst =  [np.random.randint(5) for i in range(10)]
-    output_lst = [np.random.randint(5) for i in range(10)]
-
-    model = RNNLM(5, 5, 10)
-    numerical_gradient_check(model, input_lst, output_lst)
-
-
 def rnn_train():
 
     sentences, vocab = load_ptb()
@@ -105,7 +91,6 @@ def rnn_train():
 
 
 if __name__ == '__main__':
-    #rnn_gradient()
     rnn_train()
 
 
