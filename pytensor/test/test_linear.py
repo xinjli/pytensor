@@ -1,7 +1,6 @@
-from pytensor.network.graph import Graph
-from pytensor.network.variable import Variable
 from pytensor.data.digit_dataset import *
 from pytensor.test.common import *
+from pytensor.model.linear import *
 
 
 class Linear:

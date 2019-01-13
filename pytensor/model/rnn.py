@@ -1,8 +1,6 @@
-from pytensor.data.digit_dataset import *
-from pytensor.test.common import *
-from pytensor.model.lstm import *
+from pytensor import *
 
-class LSTMLM:
+class RNNLM:
 
     def __init__(self, vocab_size, input_size, hidden_size):
 
@@ -20,7 +18,7 @@ class LSTMLM:
         self.num_steps = 0
 
         # graph
-        self.graph = Graph('LSTM')
+        self.graph = Graph('RNN')
 
         # word embedding
         embed_argument = {'vocab_size': self.vocab_size, 'embed_size': self.input_size}
@@ -28,7 +26,7 @@ class LSTMLM:
 
         # rnn
         rnn_argument = {'input_size': self.input_size, 'hidden_size': self.hidden_size, 'max_num_steps': self.max_num_steps}
-        self.rnn = self.graph.get_operation('LSTM', rnn_argument)
+        self.rnn = self.graph.get_operation('RNN', rnn_argument)
 
         # affines
         affine_argument = {'input_size': self.hidden_size, 'hidden_size': self.output_size}
@@ -69,29 +67,3 @@ class LSTMLM:
             ce_loss += cur_ce_loss
 
         return ce_loss
-
-
-
-class TestLSTMModel(unittest.TestCase):
-
-    def test_gradient(self):
-        """
-        validate model's gradient with numerical methods
-
-        :return:
-        """
-
-        input_lst = [np.random.randint(5) for i in range(10)]
-        output_lst = [np.random.randint(5) for i in range(10)]
-
-        model = LSTMLM(5, 5, 10)
-
-        grad_info = gradient_generator(model, input_lst, output_lst)
-
-        for var, expected_grad, actual_grad in grad_info:
-            diff = np.sum(np.abs(expected_grad - actual_grad))
-            print("Now checking ", var)
-            self.assertLessEqual(diff, 0.001)
-
-if __name__ == '__main__':
-    unittest.main()
