@@ -1,7 +1,6 @@
 # pytensor: A Deep Learning Framework with pure numpy
 
 pytensor is a deep learning framework implemented with pure numpy.
-![Framework](framework.png)
 
 ## Features
 
@@ -11,6 +10,8 @@ The framework is a toy framework implemented by pure numpy.
 * Users can use it to construct computational graph by connecting operations (as tensorflow and popular frameworks do)
 * Auto differentiation is supported, so it is not necessary to implement backward computation by yourself
 * Common operations used in NLP and speech is available such as embedding and lstm operations.  
+
+![Framework](framework.png)
 
 ## Install
 
