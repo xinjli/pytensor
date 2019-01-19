@@ -12,15 +12,15 @@ def gradient_generator(model, input_variables, target_variable):
     """
 
     # clear gradient before validation
-    model.graph.parameter.clear_grads()
+    model.parameter.clear_grads()
 
     # run normal procedures to compute automatic gradient
     model.forward(input_variables)
     model.loss(target_variable)
-    model.graph.backward()
+    model.backward()
 
     # variables we need to check
-    variable_dict = model.graph.parameter.variable_dict
+    variable_dict = model.parameter.variable_dict
 
     for var_name, var in variable_dict.items():
 
@@ -51,7 +51,7 @@ def gradient_generator(model, input_variables, target_variable):
             it.iternext()
 
             # clear ops
-            model.graph.clear()
+            model.clear()
 
         # compare numerical grad with auto grad
         diff = np.sum(var.grad - numerical_grad)

@@ -2,16 +2,16 @@ from pytensor.tutorial.part2.trainer import *
 from pytensor.data.digit_dataset import *
 
 
-class MLP:
+class MLP(Graph):
 
     def __init__(self, input_size, hidden_size, output_size):
-        self.graph = Graph("MLP")
+        super().__init__("mlp")
 
         # make graph
-        self.affine1 = self.graph.get_operation('Affine', {'input_size': input_size, 'hidden_size': hidden_size})
-        self.sigmoid = self.graph.get_operation('Sigmoid')
-        self.affine2 = self.graph.get_operation('Affine', {'input_size': hidden_size, 'hidden_size': output_size})
-        self.softmaxloss = self.graph.get_operation('SoftmaxLoss')
+        self.affine1 = self.get_operation('Affine', {'input_size': input_size, 'hidden_size': hidden_size})
+        self.sigmoid = self.get_operation('Sigmoid')
+        self.affine2 = self.get_operation('Affine', {'input_size': hidden_size, 'hidden_size': output_size})
+        self.softmaxloss = self.get_operation('SoftmaxLoss')
 
     def forward(self, input_variable):
         affine1_variable = self.affine1.forward(input_variable)

@@ -6,7 +6,7 @@ from pytensor.ops import *
 
 class Graph:
 
-    def __init__(self, name):
+    def __init__(self, name='graph'):
         """
         graph is a data structure to manage parameter and execution order
 
@@ -79,6 +79,10 @@ class Graph:
         :param ops:
         :return:
         """
+
+        return NotImplementedError
+
+    def register(self, ops):
 
         if self.train_state:
             self.forward_ops.append(ops)

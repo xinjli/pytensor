@@ -1,9 +1,10 @@
 from pytensor.data.ptb import *
 from pytensor.tutorial.part3.trainer import *
 
-class LSTMLM:
+class LSTMLM(Graph):
 
     def __init__(self, vocab_size, input_size, hidden_size):
+        super().__init__("LSTM")
 
         # embedding size
         self.vocab_size = vocab_size
@@ -18,23 +19,20 @@ class LSTMLM:
         self.max_num_steps = 100
         self.num_steps = 0
 
-        # graph
-        self.graph = Graph('LSTM')
-
         # word embedding
         embed_argument = {'vocab_size': self.vocab_size, 'embed_size': self.input_size}
-        self.word_embedding = self.graph.get_operation('Embedding', embed_argument)
+        self.word_embedding = self.get_operation('Embedding', embed_argument)
 
         # rnn
         rnn_argument = {'input_size': self.input_size, 'hidden_size': self.hidden_size, 'max_num_steps': self.max_num_steps}
-        self.rnn = self.graph.get_operation('LSTM', rnn_argument)
+        self.rnn = self.get_operation('LSTM', rnn_argument)
 
         # affines
         affine_argument = {'input_size': self.hidden_size, 'hidden_size': self.output_size}
-        self.affines = [self.graph.get_operation('Affine', affine_argument, "Affine") for i in range(self.max_num_steps)]
+        self.affines = [self.get_operation('Affine', affine_argument, "Affine") for i in range(self.max_num_steps)]
 
         # softmax
-        self.softmaxLosses = [self.graph.get_operation('SoftmaxLoss') for i in range(self.max_num_steps)]
+        self.softmaxLosses = [self.get_operation('SoftmaxLoss') for i in range(self.max_num_steps)]
 
     def forward(self, word_lst):
 
@@ -68,6 +66,7 @@ class LSTMLM:
             ce_loss += cur_ce_loss
 
         return ce_loss
+
 
 
 def lstm_train():
