@@ -16,7 +16,7 @@ class Trainer:
 
         for ii in range(epoch):
 
-            self.model.graph.train()
+            self.model.train()
 
             loss = 0.0
 
@@ -33,10 +33,10 @@ class Trainer:
                 loss += self.model.loss(target_variable)
 
                 # automatic differentiation
-                self.model.graph.backward()
+                self.model.backward()
 
                 # optimization
-                self.model.graph.optimizer.update()
+                self.model.optimize()
 
 
             accuracy = self.test(x_test, y_test)
@@ -44,7 +44,7 @@ class Trainer:
 
     def test(self, x_test, y_test):
 
-        self.model.graph.eval()
+        self.model.eval()
 
         acc_cnt = 0.0
         all_cnt = len(x_test)

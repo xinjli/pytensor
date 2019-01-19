@@ -71,6 +71,13 @@ class Graph:
 
         self.train_state = False
 
+    def optimize(self):
+        """
+        run optimizer
+
+        :return:
+        """
+        self.optimizer.update()
 
     def forward(self, ops):
         """

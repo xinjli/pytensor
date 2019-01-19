@@ -16,7 +16,7 @@ class Trainer:
 
         for ii in range(epoch):
 
-            self.model.graph.train()
+            self.model.train()
 
             loss = 0.0
             it_loss = 0.0
@@ -40,10 +40,10 @@ class Trainer:
                 loss += cur_loss
 
                 # automatic differentiation
-                self.model.graph.backward()
+                self.model.backward()
 
                 # optimization
-                self.model.graph.optimizer.update()
+                self.model.optimize()
 
                 if (i+1) % iteration == 0:
                     # report iteration
@@ -58,7 +58,7 @@ class Trainer:
 
     def test(self, x_test, y_test):
 
-        self.model.graph.eval()
+        self.model.eval()
 
         acc_cnt = 0.0
         all_cnt = len(x_test)
