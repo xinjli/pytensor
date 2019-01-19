@@ -31,22 +31,44 @@ To install from pypi:
 I implemented three models under the tutorial directory to show how to use the framework.
 Each model will be introduced as well as the framework itself in my [blog](http://www.xinjianl.com)
 
-### Linear Model
-Here we show a predefined model described [here](http://www.xinjianl.com/blog/2017/12/20/implement-a-deep-learning-framework-with-pure-numpy/)
-
+### MLP Example
+Here we show a example how to define a model using pytensor 
 
 ```python
-from pytensor.tutorial.part2.linear import *
-  
+from pytensor import *
+from pytensor.network.trainer import *
+from pytensor.data.digit_dataset import *
+
+
+class MLP(Graph):
+
+    def __init__(self, input_size, hidden_size, output_size):
+        super().__init__("mlp")
+
+        # make graph
+        self.affine1 = self.get_operation('Affine', {'input_size': input_size, 'hidden_size': hidden_size})
+        self.sigmoid = self.get_operation('Sigmoid')
+        self.affine2 = self.get_operation('Affine', {'input_size': hidden_size, 'hidden_size': output_size})
+        self.softmaxloss = self.get_operation('SoftmaxLoss')
+
+    def forward(self, input_variable):
+        affine1_variable = self.affine1.forward(input_variable)
+        sigmoid_variable = self.sigmoid.forward(affine1_variable)
+        affine2_variable = self.affine2.forward(sigmoid_variable)
+
+        return self.softmaxloss.forward(affine2_variable)
+
+    def loss(self, target_variable):
+        return self.softmaxloss.loss(target_variable)
+
+
 # load digit data for multiclass classification
 data_train, data_test, label_train, label_test = digit_dataset()
 
-# create a predefined linear model
-# - input dimension: 64
-# - target dimension: 10
-model = Linear(64, 10)
+# create a MLP model with dimensions of 64 input, 30 hidden, 10 output 
+model = MLP(64, 30, 10)
 
-# create a trainer for the model
+# create a trainer
 trainer = Trainer(model)
 
 # train 40 epoch
