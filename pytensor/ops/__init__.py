@@ -4,3 +4,4 @@ from pytensor.ops.loss_ops import *
 from pytensor.ops.lstm_ops import *
 from pytensor.ops.math_ops import *
 from pytensor.ops.rnn_ops import *
+from pytensor.ops.rnn_util_ops import *

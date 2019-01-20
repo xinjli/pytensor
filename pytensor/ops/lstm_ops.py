@@ -3,11 +3,11 @@ from pytensor.network.parameter import *
 from pytensor.network.operation import *
 from pytensor.ops.math_ops import *
 
-class LSTMCell(Operation):
+class RawLSTMCell(Operation):
 
-    def __init__(self,  name='RNNCell', argument=None, graph=None):
+    def __init__(self,  name='RawLSTMCell', argument=None, graph=None):
 
-        super(LSTMCell, self).__init__(name, argument, graph)
+        super(RawLSTMCell, self).__init__(name, argument, graph)
 
         # intialize size
         self.input_size = argument['input_size']
@@ -93,8 +93,7 @@ class LSTMCell(Operation):
         if input_variables[1] is None:
             input_variables[1] = Variable(np.zeros((self.batch_size, self.hidden_size)))
 
-
-        super(LSTMCell, self).forward(input_variables)
+        super(RawLSTMCell, self).forward(input_variables)
 
         # remember variables
         self.prev_hidden_state = self.input_variables[0]
@@ -193,6 +192,114 @@ class LSTMCell(Operation):
 
         self.prev_hidden_state.grad += np.dot(self.forget_variable.grad, self.Wf_h.value.T)
         self.input_variable.grad += np.dot(self.forget_variable.grad, self.Wf_i.value.T)
+
+class LSTMCell(Operation):
+
+    def __init__(self,  name='LSTMCell', argument=None, graph=None):
+
+        super(LSTMCell, self).__init__(name, argument, graph)
+
+        # intialize size
+        self.input_size = argument['input_size']
+        self.hidden_size = argument['hidden_size']
+
+        # batch size
+        self.batch_size = 1
+
+        self.graph = graph
+        self.forget_gate  = self.graph.get_operation("RNNAffine", {'input_size': self.input_size, 'hidden_size': self.hidden_size, "nonlinear": "Sigmoid"}, "LSTMForget")
+        self.input_gate   = self.graph.get_operation("RNNAffine", {'input_size': self.input_size, 'hidden_size': self.hidden_size, "nonlinear": "Sigmoid"}, "LSTMInput")
+        self.output_gate  = self.graph.get_operation("RNNAffine", {'input_size': self.input_size, 'hidden_size': self.hidden_size, "nonlinear": "Sigmoid"}, "LSTMOutput")
+        self.cell_gate    = self.graph.get_operation("RNNAffine", {'input_size': self.input_size, 'hidden_size': self.hidden_size, "nonlinear": "Tanh"}, "LSTMCell")
+        self.forget_multi = self.graph.get_operation("Multiply")
+        self.input_multi  = self.graph.get_operation("Multiply")
+        self.output_multi = self.graph.get_operation("Multiply")
+        self.tanh         = self.graph.get_operation("Tanh")
+        self.add          = self.graph.get_operation("Add")
+
+        # variables
+        self.input_variable = None
+
+        # current state variables
+        self.hidden_state = None
+        self.cell_state = None
+
+        # previous state variables
+        self.prev_hidden_state = None
+        self.prev_cell_state = None
+
+        # forget, input, output
+        self.forget_state = None
+        self.input_state = None
+        self.output_state = None
+        self.hidden_variable = None
+        self.cell_hidden_variable = None
+
+        self.forget_gate_variable = None
+        self.in_gate_variable = None
+        self.output_gate_variable = None
+        self.cell_gate_variable = None
+
+
+    def forward(self, input_variables):
+        """
+        forward computation of LSTM
+
+        f(t) = sigmoid(h(t-1)*Wf_h + input(t)*Wf_i)
+        i(t) = sigmoid(h(t-1)*Wi_h + input(t)*Wi_i)
+        o(t) = sigmoid(h(t-1)*Wo_h + input(t)*Wo_i)
+        c(t) = tanh(h(t-1)*Wc_h + input(t)*Wc_i)
+
+        cell(t) = f(t)*cell(t-1) * i(t)*c(t)
+        hidden(t) = o(t)*tanh(cell(t))
+
+        input_variables should contain:
+        - prev_hidden_state
+        - prev_cell_state
+        - input variable
+
+        """
+
+        self.batch_size = input_variables[2].value.shape[0]
+
+        # initialize prev_hidden_state if not provided
+        if input_variables[0] is None:
+            input_variables[0] = Variable(np.zeros((self.batch_size, self.hidden_size)))
+
+        # initialize prev_cell_state if not provided
+        if input_variables[1] is None:
+            input_variables[1] = Variable(np.zeros((self.batch_size, self.hidden_size)))
+
+        super(LSTMCell, self).forward(input_variables)
+
+        # remember variables
+        self.prev_hidden_state = self.input_variables[0]
+        self.prev_cell_state = self.input_variables[1]
+        self.input_variable = self.input_variables[2]
+        input_hidden_pair = [self.prev_hidden_state, self.input_variable]
+
+        self.forget_gate_variable = self.forget_gate.forward(input_hidden_pair)
+        self.input_gate_variable = self.input_gate.forward(input_hidden_pair)
+        self.output_gate_variable = self.output_gate.forward(input_hidden_pair)
+        self.cell_gate_variable = self.cell_gate.forward(input_hidden_pair)
+
+        # compute current cell state
+        # cell(t) = f(t)*cell(t-1) + i(t)*c(t)
+        self.forget_state = self.forget_multi.forward([self.forget_gate_variable, self.prev_cell_state])
+        self.input_state  = self.input_multi.forward([self.input_gate_variable, self.cell_gate_variable])
+        self.cell_state   = self.add.forward([self.forget_state, self.input_state])
+
+        # update hidden state
+        # hidden(t) = o(t) * tanh(cell(t))
+        self.cell_hidden_variable = self.tanh.forward(self.cell_state)
+        self.hidden_state = self.output_multi.forward([self.output_gate_variable, self.cell_hidden_variable])
+
+        # return hidden and cell
+        return self.hidden_state, self.cell_state
+
+
+    def backward(self):
+        return
 
 
 class LSTM(Operation):

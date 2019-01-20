@@ -16,7 +16,7 @@ class Add(Operation):
         super(Add, self).forward(input_variables)
 
         # value for the output variable
-        value = np.zeros_like(self.input_variables[0])
+        value = np.zeros_like(self.input_variables[0].value)
 
         for input_variable in self.input_variables:
             value += input_variable.value
@@ -59,10 +59,10 @@ class Multiply(Operation):
         # validate both input_variables have same shape
         self.x = input_variables[0]
         self.y = input_variables[1]
-        assert(self.x.shape == self.y.shape)
+        assert(self.x.value.shape == self.y.value.shape)
 
         # value for the output variable
-        value = np.multiply(self.x, self.y)
+        value = np.multiply(self.x.value, self.y.value)
         self.output_variable = Variable(value)
 
         return self.output_variable
@@ -198,7 +198,7 @@ class Affine(Operation):
         super(Affine, self).forward(input_variables)
 
         # check input size
-        assert(input_variables.value.shape[1] == self.input_size)
+        assert input_variables.value.shape[1] == self.input_size, "expected: "+str(self.input_size)+" actual: "+str(input_variables.value.shape[1])
 
         # apply affine transformation
         value = np.dot(self.input_variables.value, self.W.value) + self.b.value

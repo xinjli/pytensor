@@ -1,12 +1,13 @@
 from pytensor.network.variable import *
 from pytensor.network.parameter import *
 from pytensor.network.operation import *
+from pytensor.ops.rnn_util_ops import *
 
-class RNNCell(Operation):
+class RawRNNCell(Operation):
 
-    def __init__(self,  name='RNNCell', argument=None, graph=None):
+    def __init__(self,  name='RawRNNCell', argument=None, graph=None):
 
-        super(RNNCell, self).__init__(name, argument, graph)
+        super(RawRNNCell, self).__init__(name, argument, graph)
 
         # intialize size
         self.input_size = argument['input_size']
@@ -41,7 +42,7 @@ class RNNCell(Operation):
             input_variables[0] = prev_state_variable
 
         # forward registration
-        super(RNNCell, self).forward(input_variables)
+        super(RawRNNCell, self).forward(input_variables)
 
         # remember variables
         self.prev_state_variable = self.input_variables[0]
@@ -86,6 +87,50 @@ class RNNCell(Operation):
         # update input variable's gradient
         self.input_variable.grad += dLdI
 
+
+class RNNCell(Operation):
+
+    def __init__(self,  name, argument, graph):
+
+        super(RNNCell, self).__init__(name, argument, graph)
+
+        self.graph = graph
+
+        # intialize size
+        self.input_size = argument['input_size']
+        self.hidden_size = argument['hidden_size']
+
+        # batch size
+        self.batch_size = 1
+
+        self.rnn_affine = self.graph.get_operation("RNNAffine", {'input_size': self.input_size, 'hidden_size': self.hidden_size, "nonlinear": "Tanh"}, "RNNAffine")
+
+        self.input_variable = None
+
+    def forward(self, input_variables):
+        """
+        forward computation of RNNCell
+        State(t) = tanh(State(t-1)*W + Input(t)*U)
+
+        :param input_variables: input_variables should contain 2 variables: State(t-1) and Input(t)
+        , State(t-1) is from previous cell and Input(t) is the current cell input variable.
+        :return: State(t)
+        """
+
+        # initialize State(t-1) if it is not provided
+        if input_variables[0] is None:
+            self.batch_size = input_variables[1].value.shape[0]
+
+            prev_state_variable = Variable(np.zeros((self.batch_size, self.hidden_size)))
+            input_variables[0] = prev_state_variable
+
+        # forward registration
+        super(RNNCell, self).forward(input_variables)
+        self.state_variable = self.rnn_affine.forward(self.input_variables)
+        return self.state_variable
+
+    def backward(self):
+        return
 
 class RNN(Operation):
 
