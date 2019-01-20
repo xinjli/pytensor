@@ -79,17 +79,33 @@ class Graph:
         """
         self.optimizer.update()
 
-    def forward(self, ops):
+    def forward(self, input_variables):
         """
-        register a forward ops to the stack (for backward computation)
+        input the forward function for the model
 
-        :param ops:
+        :param input_variables:
+        :return:
+        """
+
+        return NotImplementedError
+
+    def loss(self, target_variables):
+        """
+        implement the loss function for the model
+
+        :param target_variables:
         :return:
         """
 
         return NotImplementedError
 
     def register(self, ops):
+        """
+        register a forward ops to the stack (for backward computation)
+
+        :param ops:
+        :return:
+        """
 
         if self.train_state:
             self.forward_ops.append(ops)

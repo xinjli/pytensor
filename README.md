@@ -31,8 +31,11 @@ To install from pypi:
 I implemented three models under the tutorial directory to show how to use the framework.
 Each model will be introduced as well as the framework itself in my [blog](http://www.xinjianl.com)
 
-### MLP Example
-Here we show a example how to define a model using pytensor 
+### Graph
+To implement a model, we need to inherit the Graph class, and then implement two methods *forward* and *loss*.
+*forward* should specify how the model should produce outputs from inputs, and *loss* should implement the logic of loss function.
+
+Here we show a example of simple MLP model.
 
 ```python
 from pytensor import *
@@ -104,6 +107,14 @@ Following operations are implemented currently or planned to become available
 * Speech-related operations
   * CTC (not included yet, prototype is available under the ctc branch)
   
+### Loss
+Loss is a special type of operation which should implement *loss* method in addition to the *forward* and *backward*.
+Following loss are implemented currently.
+
+* Softmax CE Loss 
+* Square Loss
+  
+  
 ### Tests
 
 You can implement unit test to validate your model and operations are working.
@@ -117,5 +128,47 @@ Sample tests are available in pytensor.test. You can run those existing tests wi
 	python -m pytensor.test.test_lstm
 
 
+### Customization
 
+Basically, we can add new operations to support more features. 
+To implement a new operation, we need to support *forward* and *backward* interfaces.
+
+For examples, here is an example of the default addition operation.
+
+```python
+class Add(Operation):
+
+    def __init__(self, name='add', argument=None, graph=None):
+        super(Add, self).__init__(name, argument, graph)
+
+
+    def forward(self, input_variables):
+        """
+        Add all variables in the input_variable
+
+        :param input_variables:
+        :return:
+        """
+        super(Add, self).forward(input_variables)
+
+        # value for the output variable
+        value = np.zeros_like(self.input_variables[0].value)
+
+        for input_variable in self.input_variables:
+            value += input_variable.value
+
+        self.output_variable = Variable(value)
+
+        return self.output_variable
+
+    def backward(self):
+        """
+        backward grad into each input variable
+
+        :return:
+        """
+
+        for input_variable in self.input_variables:
+            input_variable.grad += self.output_variable.grad
+```
 
