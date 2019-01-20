@@ -207,7 +207,9 @@ class LSTMCell(Operation):
         self.batch_size = 1
 
         self.graph = graph
-        self.forget_gate  = self.graph.get_operation("RNNAffine", {'input_size': self.input_size, 'hidden_size': self.hidden_size, "nonlinear": "Sigmoid"}, "LSTMForget")
+
+        # set forget bias to 1 to prevent gradient vanishing
+        self.forget_gate  = self.graph.get_operation("RNNAffine", {'input_size': self.input_size, 'hidden_size': self.hidden_size, "nonlinear": "Sigmoid", "bias": 2.0}, "LSTMForget")
         self.input_gate   = self.graph.get_operation("RNNAffine", {'input_size': self.input_size, 'hidden_size': self.hidden_size, "nonlinear": "Sigmoid"}, "LSTMInput")
         self.output_gate  = self.graph.get_operation("RNNAffine", {'input_size': self.input_size, 'hidden_size': self.hidden_size, "nonlinear": "Sigmoid"}, "LSTMOutput")
         self.cell_gate    = self.graph.get_operation("RNNAffine", {'input_size': self.input_size, 'hidden_size': self.hidden_size, "nonlinear": "Tanh"}, "LSTMCell")

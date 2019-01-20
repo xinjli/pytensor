@@ -5,29 +5,38 @@ class RNNAffine(Operation):
 
     def __init__(self, name="RNNAffine", argument=None, graph=None):
         """
-        Affine transformation: y= nonlinear(W1 x1 + W2 x2)
+        Affine transformation: y= nonlinear(U x1 + W x2 + b)
         This is a utility operation for RNN and LSTM
 
-        :param argument: {'input_size', 'hidden_size', 'nonlinear'(optional)}
+        :param argument: {'input_size', 'hidden_size', 'nonlinear'(optional), 'bias'(optional) }
         """
 
         super(RNNAffine, self).__init__(name, argument, graph)
 
-        # arg should contains two int
         # one for input_size and the other for hidden_size
-        assert (len(argument) == 2 or len(argument) ==3)
-        assert ('input_size' in argument)
-        assert ('hidden_size' in argument)
+        assert ('input_size' in argument and 'hidden_size' in argument)
 
         self.input_size = argument['input_size']
         self.hidden_size = argument['hidden_size']
 
         self.graph = graph
 
-        # create variables
-        self.affine_U = self.graph.get_operation("Affine", {'input_size': self.input_size, 'hidden_size': self.hidden_size},  name+"_U")
-        self.affine_W = self.graph.get_operation("Affine", {'input_size': self.hidden_size, 'hidden_size': self.hidden_size}, name+"_W")
-        self.add = self.graph.get_operation("Add")
+        # bias is disabled
+        if 'bias' in argument and argument['bias'] == 'None':
+            self.b = None
+        else:
+            b_name = self.name + "_b"
+            self.b = self.graph.parameter.get_variable(b_name, (self.hidden_size,))
+
+        # bias initialization
+        if 'bias' in argument and isinstance(argument['bias'], float):
+            self.b.value[::] = float(argument['bias'])
+
+        # hidden to hidden
+        self.U = self.graph.parameter.get_variable(self.name+'_U', (self.hidden_size, self.hidden_size))
+
+        # input to hidden
+        self.W = self.graph.parameter.get_variable(self.name+'_W', (self.input_size, self.hidden_size))
 
         # nonlinear operation
         self.nonlinear = None
@@ -35,27 +44,44 @@ class RNNAffine(Operation):
             nonlinear = argument['nonlinear']
             self.nonlinear = self.graph.get_operation(nonlinear, None, name+"_"+nonlinear)
 
+        # output variables
+        self.add_variable = None
+        self.nonlinear_variable = None
+
+
     def forward(self, input_variables):
         super(RNNAffine, self).forward(input_variables)
 
-        # remember variables
-        self.prev_state_variable = self.input_variables[0]
-        self.input_variable = self.input_variables[1]
+        # check input size
+        assert input_variables[1].value.shape[1] == self.input_size, "expected: " + str(
+            self.input_size) + " actual: " + str(input_variables[1].value.shape[1])
 
-        # input to hidden
-        input_hidden_variable = self.affine_U.forward(self.input_variable)
+        # check input size
+        assert input_variables[0].value.shape[1] == self.hidden_size, "expected: " + str(
+            self.input_size) + " actual: " + str(input_variables[0].value.shape[1])
 
-        # hidden to hidden
-        hidden_hidden_variable = self.affine_W.forward(self.prev_state_variable)
+        # apply affine transformation
+        value = np.dot(self.input_variables[0].value, self.U.value) + np.dot(self.input_variables[1].value, self.W.value)
 
-        # add two variables
-        add_variable = self.add.forward([input_hidden_variable, hidden_hidden_variable])
+        # add bias
+        if self.b:
+            value += self.b.value
+
+        self.add_variable = Variable(value)
 
         if self.nonlinear:
-            self.state_variable = self.nonlinear.forward(add_variable)
-            return self.state_variable
+            self.nonlinear_variable = self.nonlinear.forward(self.add_variable)
+            return self.nonlinear_variable
         else:
-            return add_variable
+            return self.add_variable
 
     def backward(self):
-        return
+
+        self.input_variables[1].grad += np.dot(self.add_variable.grad, self.W.value.T)
+        self.input_variables[0].grad += np.dot(self.add_variable.grad, self.U.value.T)
+
+        self.W.grad += np.dot(self.input_variables[1].value.T, self.add_variable.grad)
+        self.U.grad += np.dot(self.input_variables[0].value.T, self.add_variable.grad)
+
+        if self.b:
+            self.b.grad += np.sum(self.add_variable.grad, axis=0)

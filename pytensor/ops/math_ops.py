@@ -176,23 +176,32 @@ class Affine(Operation):
         """
         Affine transformation: y=wx+b
 
-        :param argument: [input_size, hidden_size]
+        :param argument: [input_size, hidden_size, bias (optional)]
         """
 
         super(Affine, self).__init__(name, argument, graph)
 
         # arg should contains two int
         # one for input_size and the other for hidden_size
-        assert(len(argument)==2)
+        assert(len(argument)==2 or len(argument)==3)
 
         self.input_size = argument['input_size']
         self.hidden_size = argument['hidden_size']
 
-        W_name = self.name + "_W"
-        b_name = self.name + "_b"
+        # bias is disabled
+        if 'bias' in argument and argument['bias'] == 'None':
+            self.b = None
+        else:
+            b_name = self.name + "_b"
+            self.b = self.graph.parameter.get_variable(b_name, (self.hidden_size,))
 
+        # bias initialization
+        if 'bias' in argument and isinstance(argument['bias'], float):
+            self.b.value[::] = float(argument['bias'])
+
+        W_name = self.name + "_W"
         self.W = self.graph.parameter.get_variable(W_name, (self.input_size, self.hidden_size))
-        self.b = self.graph.parameter.get_variable(b_name, (self.hidden_size, ))
+
 
     def forward(self, input_variables):
         super(Affine, self).forward(input_variables)
@@ -201,12 +210,18 @@ class Affine(Operation):
         assert input_variables.value.shape[1] == self.input_size, "expected: "+str(self.input_size)+" actual: "+str(input_variables.value.shape[1])
 
         # apply affine transformation
-        value = np.dot(self.input_variables.value, self.W.value) + self.b.value
-        self.output_variable = Variable(value)
+        value = np.dot(self.input_variables.value, self.W.value)
 
+        # add bias
+        if self.b:
+            value += self.b.value
+
+        self.output_variable = Variable(value)
         return self.output_variable
 
     def backward(self):
         self.input_variables.grad += np.dot(self.output_variable.grad, self.W.value.T)
         self.W.grad += np.dot(self.input_variables.value.T, self.output_variable.grad)
-        self.b.grad += np.sum(self.output_variable.grad, axis=0)
+
+        if self.b:
+            self.b.grad += np.sum(self.output_variable.grad, axis=0)
