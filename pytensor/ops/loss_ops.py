@@ -10,7 +10,7 @@ class SoftmaxLoss(Loss):
         super(SoftmaxLoss, self).__init__(name, argument, graph)
 
     def forward(self, input_variables):
-        super(SoftmaxLoss, self).forward(input_variables)
+        self.register(input_variables)
 
         out_value = softmax(self.input_variables.value)
         self.output_variable = Variable(out_value)
@@ -39,7 +39,7 @@ class SquareLoss(Loss):
         super(SquareLoss, self).__init__(name, argument, graph)
 
     def forward(self, input_variables):
-        super(SquareLoss, self).forward(input_variables)
+        self.register(input_variables)
 
         out_value = softmax(self.input_variables.value)
         self.output_variable = Variable(out_value)

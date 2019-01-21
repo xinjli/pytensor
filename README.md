@@ -28,12 +28,74 @@ To install from pypi:
 
 ## Tutorial
 
-I implemented three models under the tutorial directory to show how to use the framework.
-Each model will be introduced as well as the framework itself in my [blog](http://www.xinjianl.com)
+The architecture of pytensor is shown in the previous diagram. 
+Its actual implementaion is described in my [blog](http://www.xinjianl.com)
+
+To build a model (*graph*) with pytensor, the basic steps are as follows
+* feed input and targets as *variables*
+* forward *variables* with *operations* and *loss*
+* backward gradients
+* optimize
+
+### Variable
+*Variable* can be initialized as follows.
+
+```
+In [1]: from pytensor import *
+
+In [2]: import numpy as np
+
+In [3]: v = Variable(np.random.random(5), name='hello')
+
+In [4]: print(v)
+Variable {name: hello}
+- value    : [0.67471201 0.06407413 0.78337818 0.39475087 0.76176572]
+- gradient : [0. 0. 0. 0. 0.]
+```
+
+### Operation
+
+Following operations are implemented currently or planned to become available
+
+* Arithmetic operations
+  * Addition
+  * Multiply
+  * Matmul
+
+* Nonlinear operations
+  * Relu
+  * Sigmoid
+  * Tanh
+  
+* Loss operations
+  * Softmax CE Loss 
+  * Square Loss
+
+* MLP-related operations
+  * Affine
+  
+* NLP-related operations
+  * embedding
+  * RNN
+  * LSTM
+  
+* Speech-related operations
+  * CTC (not included yet, prototype is available under the ctc branch)
+  
+### Loss
+Loss is a special type of operation which should implement *loss* method in addition to the *forward* and *backward*.
+Following loss are implemented currently.
+
+* Softmax CE Loss 
+* Square Loss
 
 ### Graph
 To implement a model, we need to inherit the Graph class, and then implement two methods *forward* and *loss*.
 *forward* should specify how the model should produce outputs from inputs, and *loss* should implement the logic of loss function.
+
+To train a model, it is highly recommended to initialize *variable*, *operation* and *loss* using *get_operation* and *get_variable* interfaces.
+This is to ensure that *variable* and *operation* are registered and managed by *graph* automatically.
+Otherwise, their gradients and updates should be handled manually.
 
 Here we show a example of simple MLP model.
 
@@ -77,63 +139,15 @@ trainer = Trainer(model)
 # train 40 epoch
 trainer.train(data_train, label_train, data_test, label_test, 40)
 ```
-
-### Operations
-
-Following operations are implemented currently or planned to become available
-
-* Arithmetic operations
-  * Addition
-  * Multiply
-  * Matmul
-
-* Nonlinear operations
-  * Relu
-  * Sigmoid
-  * Tanh
   
-* Loss operations
-  * Softmax CE Loss 
-  * Square Loss
-
-* MLP-related operations
-  * Affine
-  
-* NLP-related operations
-  * embedding
-  * RNN
-  * LSTM
-  
-* Speech-related operations
-  * CTC (not included yet, prototype is available under the ctc branch)
-  
-### Loss
-Loss is a special type of operation which should implement *loss* method in addition to the *forward* and *backward*.
-Following loss are implemented currently.
-
-* Softmax CE Loss 
-* Square Loss
-  
-  
-### Tests
-
-You can implement unit test to validate your model and operations are working.
-
-Sample tests are available in pytensor.test. You can run those existing tests with following commands
-
- 
-	python -m pytensor.test.test_linear
-	python -m pytensor.test.test_mlp
-	python -m pytensor.test.test_rnn
-	python -m pytensor.test.test_lstm
-
-
 ### Customization
 
 Basically, we can add new operations to support more features. 
 To implement a new operation, we need to support *forward* and *backward* interfaces.
+Be sure to call *register* interface in forward if your backward is not empty.
+This is to register the operation so that backward will be called automatically during backpropagation.
 
-For examples, here is an example of the default addition operation.
+For examples, here is the default addition operation.
 
 ```python
 class Add(Operation):
@@ -149,7 +163,7 @@ class Add(Operation):
         :param input_variables:
         :return:
         """
-        super(Add, self).forward(input_variables)
+        self.register(input_variables)
 
         # value for the output variable
         value = np.zeros_like(self.input_variables[0].value)
@@ -172,3 +186,14 @@ class Add(Operation):
             input_variable.grad += self.output_variable.grad
 ```
 
+### Tests
+
+You can implement unit test to validate your model and operations are working.
+
+Sample tests are available in pytensor.test. You can run those existing tests with following commands
+
+ 
+	python -m pytensor.test.test_linear
+	python -m pytensor.test.test_mlp
+	python -m pytensor.test.test_rnn
+	python -m pytensor.test.test_lstm

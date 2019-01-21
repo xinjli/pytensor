@@ -42,7 +42,7 @@ class RawRNNCell(Operation):
             input_variables[0] = prev_state_variable
 
         # forward registration
-        super(RawRNNCell, self).forward(input_variables)
+        self.register(input_variables)
 
         # remember variables
         self.prev_state_variable = self.input_variables[0]
@@ -125,7 +125,7 @@ class RNNCell(Operation):
             input_variables[0] = prev_state_variable
 
         # forward registration
-        super(RNNCell, self).forward(input_variables)
+        self.register(input_variables)
         self.state_variable = self.rnn_affine.forward(self.input_variables)
         return self.state_variable
 
@@ -157,7 +157,7 @@ class RNN(Operation):
         :return:
         """
 
-        super(RNN, self).forward(input_variables)
+        self.register(input_variables)
 
         self.state_variables = []
 

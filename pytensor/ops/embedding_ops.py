@@ -32,7 +32,7 @@ class Embedding(Operation):
         :param input_variables: input variable is a LongVariable containing word ids
         :return: embedding
         """
-        super(Embedding, self).forward(input_variables)
+        self.register(input_variables)
 
         # embedding only takes 1 input variable
         assert(len(input_variables) == 1)

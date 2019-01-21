@@ -49,6 +49,13 @@ class Variable:
         # whether the variable can be updated
         self.trainable = trainable
 
+    def __str__(self):
+        return "Variable {name: "+self.name+"}\n- value    : "+str(self.value)+"\n- gradient : "+str(self.grad)+""
+
+    def __repr__(self):
+        return self.__str__()
+
+
     def clear_grad(self):
         self.grad = np.zeros(self.value.shape)
 

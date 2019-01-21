@@ -13,7 +13,7 @@ class Add(Operation):
         :param input_variables:
         :return:
         """
-        super(Add, self).forward(input_variables)
+        self.register(input_variables)
 
         # value for the output variable
         value = np.zeros_like(self.input_variables[0].value)
@@ -49,7 +49,7 @@ class Multiply(Operation):
         :param input_variables:
         :return:
         """
-        super(Multiply, self).forward(input_variables)
+        self.register(input_variables)
 
         # only multiplication of two elements is supported now
         assert(len(input_variables)==2)
@@ -85,7 +85,7 @@ class Matmul(Operation):
         super(Matmul, self).__init__(name, argument, graph)
 
     def forward(self, input_variables):
-        super(Matmul, self).forward(input_variables)
+        self.register(input_variables)
 
         # only multiplication of two elements is supported now
         assert(len(input_variables)==2)
@@ -117,7 +117,7 @@ class Relu(Operation):
         :return:
         """
 
-        super(Sigmoid, self).forward(input_variables)
+        self.register(input_variables)
 
         # compute mask
         self.mask = (input_variables.value <= 0)
@@ -141,7 +141,7 @@ class Sigmoid(Operation):
         super(Sigmoid, self).__init__(name, argument, graph)
 
     def forward(self, input_variables):
-        super(Sigmoid, self).forward(input_variables)
+        self.register(input_variables)
 
         # compute sigmoid
         value = sigmoid(self.input_variables.value)
@@ -159,7 +159,7 @@ class Tanh(Operation):
         super(Tanh, self).__init__(name, argument, graph)
 
     def forward(self, input_variables):
-        super(Tanh, self).forward(input_variables)
+        self.register(input_variables)
 
         self.input_variable = input_variables
         out = np.tanh(self.input_variable.value)
@@ -204,7 +204,7 @@ class Affine(Operation):
 
 
     def forward(self, input_variables):
-        super(Affine, self).forward(input_variables)
+        self.register(input_variables)
 
         # check input size
         assert input_variables.value.shape[1] == self.input_size, "expected: "+str(self.input_size)+" actual: "+str(input_variables.value.shape[1])

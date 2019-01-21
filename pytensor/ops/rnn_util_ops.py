@@ -50,7 +50,7 @@ class RNNAffine(Operation):
 
 
     def forward(self, input_variables):
-        super(RNNAffine, self).forward(input_variables)
+        self.register(input_variables)
 
         # check input size
         assert input_variables[1].value.shape[1] == self.input_size, "expected: " + str(

@@ -93,7 +93,7 @@ class RawLSTMCell(Operation):
         if input_variables[1] is None:
             input_variables[1] = Variable(np.zeros((self.batch_size, self.hidden_size)))
 
-        super(RawLSTMCell, self).forward(input_variables)
+        self.register(input_variables)
 
         # remember variables
         self.prev_hidden_state = self.input_variables[0]
@@ -272,7 +272,7 @@ class LSTMCell(Operation):
         if input_variables[1] is None:
             input_variables[1] = Variable(np.zeros((self.batch_size, self.hidden_size)))
 
-        super(LSTMCell, self).forward(input_variables)
+        self.register(input_variables)
 
         # remember variables
         self.prev_hidden_state = self.input_variables[0]
@@ -329,7 +329,7 @@ class LSTM(Operation):
         :return:
         """
 
-        super(LSTM, self).forward(input_variables)
+        self.register(input_variables)
 
         self.hidden_states = []
         self.cell_states = []

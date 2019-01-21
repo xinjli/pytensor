@@ -19,7 +19,7 @@ class Operation:
         return self.forward(input_variables)
 
 
-    def forward(self, input_variables):
+    def register(self, input_variables):
         """
         forward computation
 
@@ -31,6 +31,11 @@ class Operation:
         # register the ops
         if self.graph is not None:
             self.graph.register(self)
+
+    def forward(self, input_variables):
+
+        raise NotImplementedError
+
 
     def backward(self):
         """
