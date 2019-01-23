@@ -79,15 +79,13 @@ Following operations are implemented currently or planned to become available
   * RNN
   * LSTM
   
-* Speech-related operations
-  * CTC (not included yet, prototype is available under the ctc branch)
-  
 ### Loss
 Loss is a special type of operation which should implement *loss* method in addition to the *forward* and *backward*.
 Following loss are implemented currently.
 
 * Softmax CE Loss 
 * Square Loss
+* CTC (not included yet, prototype is available under the ctc branch)
 
 ### Graph
 To implement a model, we need to inherit the Graph class, and then implement two methods *forward* and *loss*.
