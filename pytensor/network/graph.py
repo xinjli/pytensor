@@ -23,7 +23,6 @@ class Graph:
 
         # parameter and optimizer
         self.parameter = Parameter()
-        self.optimizer = SGD(self.parameter)
 
         # index for different operations
         self.ops_index = defaultdict(int)
@@ -70,14 +69,6 @@ class Graph:
         """
 
         self.train_state = False
-
-    def optimize(self):
-        """
-        run optimizer
-
-        :return:
-        """
-        self.optimizer.update()
 
     def forward(self, input_variables):
         """

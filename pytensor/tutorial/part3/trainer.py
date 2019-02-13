@@ -1,6 +1,6 @@
 from pytensor.network.graph import *
 from pytensor.network.gradient import *
-
+from pytensor.network.optimizer import *
 
 class Trainer:
 
@@ -11,6 +11,7 @@ class Trainer:
         """
 
         self.model = model
+        self.optimizer = SGD(self.model.parameter)
 
     def train(self, x_train, y_train, x_test=None, y_test=None, epoch=40, iteration=10):
 
@@ -43,7 +44,7 @@ class Trainer:
                 self.model.backward()
 
                 # optimization
-                self.model.optimize()
+                self.optimizer.update()
 
                 if (i+1) % iteration == 0:
                     # report iteration
