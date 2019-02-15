@@ -1,12 +1,12 @@
 import numpy as np
 
-class LongVariable:
+class LongTensor:
     """
-    LongVariable is a type of variable to keep integers
+    LongTensor is a type of Tensor to keep integers
 
     """
 
-    def __init__(self, value, name='LongVariable', trainable=False):
+    def __init__(self, value, name='LongTensor', trainable=False):
         """
         :param value: long value
         :param name:
@@ -23,18 +23,18 @@ class LongVariable:
         return
 
 
-class Variable:
+class Tensor:
     """
-    Variable is the basic structure in the computation graph
+    Tensor is the basic structure in the computation graph
     It holds value for forward computation and grad for backward propagation
 
     """
 
-    def __init__(self, value, name='Variable', trainable=True):
+    def __init__(self, value, name='Tensor', trainable=True):
         """
         :param value: numpy val
-        :param name: name for the variable
-        :param trainable: whether the variable can be trained or not
+        :param name: name for the Tensor
+        :param trainable: whether the Tensor can be trained or not
         """
 
         # value for forward computation
@@ -43,14 +43,14 @@ class Variable:
         # value for backward computation
         self.grad = np.zeros(self.value.shape)
 
-        # name for the variable (which will used in parameter for registration)
+        # name for the Tensor (which will used in parameter for registration)
         self.name = name
 
-        # whether the variable can be updated
+        # whether the Tensor can be updated
         self.trainable = trainable
 
     def __str__(self):
-        return "Variable {name: "+self.name+"}\n- value    : "+str(self.value)+"\n- gradient : "+str(self.grad)+""
+        return "Tensor {name: "+self.name+"}\n- value    : "+str(self.value)+"\n- gradient : "+str(self.grad)+""
 
     def __repr__(self):
         return self.__str__()

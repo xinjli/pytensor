@@ -15,7 +15,7 @@ class TestMLPModel(unittest.TestCase):
         data_train, data_test, label_train, label_test = digit_dataset()
         model = MLP(64, 30, 10)
 
-        grad_info = gradient_generator(model, Variable([data_train[0]]), Variable([label_train[0]]))
+        grad_info = gradient_generator(model, Tensor([data_train[0]]), Tensor([label_train[0]]))
 
         for var, expected_grad, actual_grad in grad_info:
             diff = np.sum(np.abs(expected_grad - actual_grad))

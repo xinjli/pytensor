@@ -1,5 +1,5 @@
 from pytensor.network.graph import Graph
-from pytensor.network.variable import Variable
+from pytensor.network.tensor import Tensor
 
 class Linear(Graph):
 
@@ -10,9 +10,9 @@ class Linear(Graph):
         self.affine = self.get_operation('Affine', {'input_size' : input_size, 'hidden_size': output_size})
         self.softmaxloss = self.get_operation('SoftmaxLoss')
 
-    def forward(self, input_variable):
-        affine_variable = self.affine.forward(input_variable)
-        return self.softmaxloss.forward(affine_variable)
+    def forward(self, input_tensor):
+        affine_tensor = self.affine.forward(input_tensor)
+        return self.softmaxloss.forward(affine_tensor)
 
-    def loss(self, target_variable):
-        return self.softmaxloss.loss(target_variable)
+    def loss(self, target_tensor):
+        return self.softmaxloss.loss(target_tensor)

@@ -12,12 +12,12 @@ class Linear(Graph):
         self.affine = self.get_operation('Affine', {'input_size' : input_size, 'hidden_size': output_size})
         self.softmaxloss = self.get_operation('SoftmaxLoss')
 
-    def forward(self, input_variable):
-        affine_variable = self.affine.forward(input_variable)
-        return self.softmaxloss.forward(affine_variable)
+    def forward(self, input_tensor):
+        affine_tensor = self.affine.forward(input_tensor)
+        return self.softmaxloss.forward(affine_tensor)
 
-    def loss(self, target_variable):
-        return self.softmaxloss.loss(target_variable)
+    def loss(self, target_tensor):
+        return self.softmaxloss.loss(target_tensor)
 
 
 class TestLinearModel(unittest.TestCase):
@@ -33,7 +33,7 @@ class TestLinearModel(unittest.TestCase):
         data_train, data_test, label_train, label_test = digit_dataset()
         model = Linear(64,10)
 
-        grad_info = gradient_generator(model, Variable([data_train[0]]), Variable([label_train[0]]))
+        grad_info = gradient_generator(model, Tensor([data_train[0]]), Tensor([label_train[0]]))
 
         for var, expected_grad, actual_grad in grad_info:
             diff = np.sum(np.abs(expected_grad - actual_grad))

@@ -1,4 +1,4 @@
-from pytensor.network.variable import *
+from pytensor.network.tensor import *
 from pytensor.network.functions import *
 from pytensor.network.parameter import *
 
@@ -9,30 +9,30 @@ class Operation:
         self.graph = graph
         self.arguments = arguments
 
-    def __call__(self, input_variables):
+    def __call__(self, input_tensors):
         """
         shortcut method of forward
 
-        :param input_variables:
+        :param input_tensors:
         :return:
         """
-        return self.forward(input_variables)
+        return self.forward(input_tensors)
 
 
-    def register(self, input_variables):
+    def register(self, input_tensors):
         """
         forward computation
 
-        :param input_variables: a list of input variables
+        :param input_tensors: a list of input tensors
         """
 
-        self.input_variables = input_variables
+        self.input_tensors = input_tensors
 
         # register the ops
         if self.graph is not None:
             self.graph.register(self)
 
-    def forward(self, input_variables):
+    def forward(self, input_tensors):
 
         raise NotImplementedError
 

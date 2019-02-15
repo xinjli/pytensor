@@ -13,15 +13,15 @@ class MLP(Graph):
         self.affine2 = self.get_operation('Affine', {'input_size': hidden_size, 'hidden_size': output_size})
         self.softmaxloss = self.get_operation('SoftmaxLoss')
 
-    def forward(self, input_variable):
-        affine1_variable = self.affine1.forward(input_variable)
-        sigmoid_variable = self.sigmoid.forward(affine1_variable)
-        affine2_variable = self.affine2.forward(sigmoid_variable)
+    def forward(self, input_tensor):
+        affine1_tensor = self.affine1.forward(input_tensor)
+        sigmoid_tensor = self.sigmoid.forward(affine1_tensor)
+        affine2_tensor = self.affine2.forward(sigmoid_tensor)
 
-        return self.softmaxloss.forward(affine2_variable)
+        return self.softmaxloss.forward(affine2_tensor)
 
-    def loss(self, target_variable):
-        return self.softmaxloss.loss(target_variable)
+    def loss(self, target_tensor):
+        return self.softmaxloss.loss(target_tensor)
 
 
 def mlp_train():

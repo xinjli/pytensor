@@ -46,23 +46,23 @@ class LSTMClassifier(Graph):
         self.num_steps = min(len(word_lst), self.max_num_steps)
 
         # create embeddings
-        self.embedding_variables = []
+        self.embedding_tensors = []
         for word_id in word_lst:
-            self.embedding_variables.append(self.word_embedding.forward([LongVariable([word_id])]))
+            self.embedding_tensors.append(self.word_embedding.forward([LongTensor([word_id])]))
 
         # run RNN
-        self.rnn_variables = self.lstm.forward(self.embedding_variables)
+        self.rnn_tensors = self.lstm.forward(self.embedding_tensors)
 
         # affine
-        self.output_variable = self.affine.forward(self.rnn_variables[-1])
+        self.output_tensor = self.affine.forward(self.rnn_tensors[-1])
 
-        self.softmax_variable = self.softmaxLoss.forward(self.output_variable)
+        self.softmax_tensor = self.softmaxLoss.forward(self.output_tensor)
 
-        return self.softmax_variable
+        return self.softmax_tensor
 
     def loss(self, target_id):
 
-        ce_loss = self.softmaxLoss.loss(LongVariable([target_id]))
+        ce_loss = self.softmaxLoss.loss(LongTensor([target_id]))
         return ce_loss
 
 
@@ -106,29 +106,29 @@ class LSTMLM(Graph):
         self.num_steps = min(len(word_lst), self.max_num_steps)
 
         # create embeddings
-        embedding_variables = []
+        embedding_tensors = []
         for word_id in word_lst:
-            embedding_variables.append(self.word_embedding.forward([LongVariable([word_id])]))
+            embedding_tensors.append(self.word_embedding.forward([LongTensor([word_id])]))
 
         # run RNN
-        rnn_variables = self.rnn.forward(embedding_variables)
+        rnn_tensors = self.rnn.forward(embedding_tensors)
 
-        # softmax variables
-        softmax_variables = []
+        # softmax tensors
+        softmax_tensors = []
 
         for i in range(self.num_steps):
-            output_variable = self.affines[i].forward(rnn_variables[i])
-            softmax_variable = self.softmaxLosses[i].forward(output_variable)
-            softmax_variables.append(softmax_variable)
+            output_tensor = self.affines[i].forward(rnn_tensors[i])
+            softmax_tensor = self.softmaxLosses[i].forward(output_tensor)
+            softmax_tensors.append(softmax_tensor)
 
-        return softmax_variables
+        return softmax_tensors
 
     def loss(self, target_ids):
 
         ce_loss = 0.0
 
         for i in range(self.num_steps):
-            cur_ce_loss = self.softmaxLosses[i].loss(LongVariable([target_ids[i]]))
+            cur_ce_loss = self.softmaxLosses[i].loss(LongTensor([target_ids[i]]))
             ce_loss += cur_ce_loss
 
         return ce_loss

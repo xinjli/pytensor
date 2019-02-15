@@ -27,15 +27,15 @@ class Trainer:
             for i in range(len(x_train)):
 
                 # extract data set
-                input_variables = x_train[i]
-                target_variable = y_train[i]
+                input_tensors = x_train[i]
+                target_tensor = y_train[i]
 
                 word_cnt += len(x_train[i])
                 it_word_cnt += len(x_train[i])
 
                 # dynamic forward
-                self.model.forward(input_variables)
-                cur_loss = self.model.loss(target_variable)
+                self.model.forward(input_tensors)
+                cur_loss = self.model.loss(target_tensor)
 
                 it_loss += cur_loss
                 loss += cur_loss
@@ -66,10 +66,10 @@ class Trainer:
 
         for i in range(len(x_test)):
 
-            v = Variable([x_test[i]])
-            output_variable = self.model.forward(v)
+            v = Tensor([x_test[i]])
+            output_tensor = self.model.forward(v)
 
-            y = np.argmax(output_variable.value[0])
+            y = np.argmax(output_tensor.value[0])
             if y == y_test[i]:
                 acc_cnt += 1.0
 

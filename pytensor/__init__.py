@@ -1,2 +1,2 @@
 from pytensor.network.graph import Graph
-from pytensor.network.variable import *
+from pytensor.network.tensor import *

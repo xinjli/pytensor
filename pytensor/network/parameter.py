@@ -1,46 +1,46 @@
-from pytensor.network.variable import *
+from pytensor.network.tensor import *
 import numpy as np
 import pickle
 
 
 class Parameter:
     """
-    Parameter is a structure to manage all trainable variables in the graph.
+    Parameter is a structure to manage all trainable tensors in the graph.
 
-    Each trainable variable should be initialized using Parameter
+    Each trainable tensor should be initialized using Parameter
     """
 
     def __init__(self):
 
-        # a dictionary mapping names to variables
-        self.variable_dict = dict()
+        # a dictionary mapping names to tensors
+        self.tensor_dict = dict()
 
         # embedding for partial updates
         self.embeddings = None
-        self.temp_variables = []
+        self.temp_tensors = []
 
-    def get_variable(self, name, shape):
+    def get_tensor(self, name, shape):
         """
-        retrieve a variable with its name
+        retrieve a tensor with its name
 
-        :param name: name of the variable
+        :param name: name of the tensor
         :param shape: desired shape
         :return:
         """
 
-        if name in self.variable_dict:
-            # if the variable exists in the dictionary,
+        if name in self.tensor_dict:
+            # if the tensor exists in the dictionary,
             # retrieve it directly
-            return self.variable_dict[name]
+            return self.tensor_dict[name]
         else:
-            # if not created yet, initialize a new variable for it
+            # if not created yet, initialize a new tensor for it
             value = np.random.standard_normal(shape) / np.sqrt(shape[0])
-            variable = Variable(value, name=name)
+            tensor = Tensor(value, name=name)
 
-            # register the variable
-            self.variable_dict[name] = variable
+            # register the tensor
+            self.tensor_dict[name] = tensor
 
-            return variable
+            return tensor
 
     def get_embedding(self, vocab_size, word_dim):
 
@@ -51,45 +51,45 @@ class Parameter:
         # initialize the embedding
         self.embeddings = []
 
-        # embedding is implemented as a list of variables
+        # embedding is implemented as a list of tensors
         # this is for efficient update
         for i in range(vocab_size):
-            embedding = Variable([np.random.uniform(-np.sqrt(1./word_dim), np.sqrt(1./word_dim), word_dim)])
+            embedding = Tensor([np.random.uniform(-np.sqrt(1./word_dim), np.sqrt(1./word_dim), word_dim)])
             self.embeddings.append(embedding)
 
         return self.embeddings
 
 
-    def add_temp_variable(self, temp_variable):
+    def add_temp_tensor(self, temp_tensor):
         """
-        register temporary variable for optimizer to update variable
+        register temporary tensor for optimizer to update tensor
         this is mainly for word embedding training
 
-        :param temp_variable: a trainable variable (usually a variable in the embedding)
+        :param temp_tensor: a trainable tensor (usually a tensor in the embedding)
         :return:
         """
 
-        self.temp_variables.append(temp_variable)
+        self.temp_tensors.append(temp_tensor)
 
 
-    def clear_temp_variable(self):
+    def clear_temp_tensor(self):
         """
-        clear temporary variable
+        clear temporary tensor
 
         :return:
         """
-        self.temp_variables = []
+        self.temp_tensors = []
 
 
     def clear_grads(self):
         """
-        clear gradients of all variables
+        clear gradients of all tensors
 
         :return:
         """
 
-        for k, v in self.variable_dict.items():
+        for k, v in self.tensor_dict.items():
             v.clear_grad()
 
-        for v in self.temp_variables:
+        for v in self.temp_tensors:
             v.clear_grad()

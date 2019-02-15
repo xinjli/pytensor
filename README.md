@@ -32,23 +32,23 @@ The architecture of pytensor is shown in the previous diagram.
 Its actual implementaion is described in my [blog](http://www.xinjianl.com)
 
 To build a model (*graph*) with pytensor, the basic steps are as follows
-* feed input and targets as *variables*
-* forward *variables* with *operations* and *loss*
+* feed input and targets as *tensors*
+* forward *tensors* with *operations* and *loss*
 * backward gradients
 * optimize
 
-### Variable
-*Variable* can be initialized as follows.
+### Tensor
+*tensor* can be initialized as follows.
 
 ```
 In [1]: from pytensor import *
 
 In [2]: import numpy as np
 
-In [3]: v = Variable(np.random.random(5), name='hello')
+In [3]: v = tensor(np.random.random(5), name='hello')
 
 In [4]: print(v)
-Variable {name: hello}
+tensor {name: hello}
 - value    : [0.67471201 0.06407413 0.78337818 0.39475087 0.76176572]
 - gradient : [0. 0. 0. 0. 0.]
 ```
@@ -91,8 +91,8 @@ Following loss are implemented currently.
 To implement a model, we need to inherit the Graph class, and then implement two methods *forward* and *loss*.
 *forward* should specify how the model should produce outputs from inputs, and *loss* should implement the logic of loss function.
 
-To train a model, it is highly recommended to initialize *variable*, *operation* and *loss* using *get_operation* and *get_variable* interfaces.
-This is to ensure that *variable* and *operation* are registered and managed by *graph* automatically.
+To train a model, it is highly recommended to initialize *tensor*, *operation* and *loss* using *get_operation* and *get_tensor* interfaces.
+This is to ensure that *tensor* and *operation* are registered and managed by *graph* automatically.
 Otherwise, their gradients and updates should be handled manually.
 
 Here we show a example of simple MLP model.
@@ -114,15 +114,15 @@ class MLP(Graph):
         self.affine2 = self.get_operation('Affine', {'input_size': hidden_size, 'hidden_size': output_size})
         self.softmaxloss = self.get_operation('SoftmaxLoss')
 
-    def forward(self, input_variable):
-        affine1_variable = self.affine1.forward(input_variable)
-        sigmoid_variable = self.sigmoid.forward(affine1_variable)
-        affine2_variable = self.affine2.forward(sigmoid_variable)
+    def forward(self, input_tensor):
+        affine1_tensor = self.affine1.forward(input_tensor)
+        sigmoid_tensor = self.sigmoid.forward(affine1_tensor)
+        affine2_tensor = self.affine2.forward(sigmoid_tensor)
 
-        return self.softmaxloss.forward(affine2_variable)
+        return self.softmaxloss.forward(affine2_tensor)
 
-    def loss(self, target_variable):
-        return self.softmaxloss.loss(target_variable)
+    def loss(self, target_tensor):
+        return self.softmaxloss.loss(target_tensor)
 
 
 # load digit data for multiclass classification
@@ -154,34 +154,34 @@ class Add(Operation):
         super(Add, self).__init__(name, argument, graph)
 
 
-    def forward(self, input_variables):
+    def forward(self, input_tensors):
         """
-        Add all variables in the input_variable
+        Add all tensors in the input_tensor
 
-        :param input_variables:
+        :param input_tensors:
         :return:
         """
-        self.register(input_variables)
+        self.register(input_tensors)
 
-        # value for the output variable
-        value = np.zeros_like(self.input_variables[0].value)
+        # value for the output tensor
+        value = np.zeros_like(self.input_tensors[0].value)
 
-        for input_variable in self.input_variables:
-            value += input_variable.value
+        for input_tensor in self.input_tensors:
+            value += input_tensor.value
 
-        self.output_variable = Variable(value)
+        self.output_tensor = tensor(value)
 
-        return self.output_variable
+        return self.output_tensor
 
     def backward(self):
         """
-        backward grad into each input variable
+        backward grad into each input tensor
 
         :return:
         """
 
-        for input_variable in self.input_variables:
-            input_variable.grad += self.output_variable.grad
+        for input_tensor in self.input_tensors:
+            input_tensor.grad += self.output_tensor.grad
 ```
 
 ### Tests

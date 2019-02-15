@@ -21,14 +21,14 @@ class Trainer:
             for i in range(len(x_train)):
 
                 # extract data set
-                input_variables = Variable([x_train[i]])
-                target_variable = Variable([y_train[i]])
+                input_tensors = Tensor([x_train[i]])
+                target_tensor = Tensor([y_train[i]])
 
                 # forward
-                self.model.forward(input_variables)
+                self.model.forward(input_tensors)
 
                 # loss
-                loss += self.model.loss(target_variable)
+                loss += self.model.loss(target_tensor)
 
                 # backward
                 self.model.backward()
@@ -46,10 +46,10 @@ class Trainer:
 
         for i in range(len(x_test)):
 
-            v = Variable([x_test[i]])
-            output_variable = self.model.forward(v)
+            v = Tensor([x_test[i]])
+            output_tensor = self.model.forward(v)
 
-            y = np.argmax(output_variable.value[0])
+            y = np.argmax(output_tensor.value[0])
             if y == y_test[i]:
                 acc_cnt += 1.0
 

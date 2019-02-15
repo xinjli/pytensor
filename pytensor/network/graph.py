@@ -47,8 +47,8 @@ class Graph:
 
         return ops
 
-    def get_variable(self, name, shape):
-        return self.parameter.get_variable(name, shape)
+    def get_tensor(self, name, shape):
+        return self.parameter.get_tensor(name, shape)
 
 
     def train(self):
@@ -70,21 +70,21 @@ class Graph:
 
         self.train_state = False
 
-    def forward(self, input_variables):
+    def forward(self, input_tensors):
         """
         input the forward function for the model
 
-        :param input_variables:
+        :param input_tensors:
         :return:
         """
 
         return NotImplementedError
 
-    def loss(self, target_variables):
+    def loss(self, target_tensors):
         """
         implement the loss function for the model
 
-        :param target_variables:
+        :param target_tensors:
         :return:
         """
 

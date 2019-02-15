@@ -21,20 +21,20 @@ class LinearModel:
 
         # initialize parameters
         self.parameter = Parameter()
-        self.W = self.parameter.get_variable('weight', [self.input_size, self.output_size])
+        self.W = self.parameter.get_tensor('weight', [self.input_size, self.output_size])
 
         # ops and loss
         self.matmul = Matmul()
         self.loss_ops = SoftmaxLoss()
 
-    def forward(self, input_variable):
-        output_variable = self.matmul.forward([input_variable, self.W])
-        self.loss_ops.forward(output_variable)
+    def forward(self, input_tensor):
+        output_tensor = self.matmul.forward([input_tensor, self.W])
+        self.loss_ops.forward(output_tensor)
 
-        return output_variable
+        return output_tensor
 
-    def loss(self, target_variable):
-        loss_val = self.loss_ops.loss(target_variable)
+    def loss(self, target_tensor):
+        loss_val = self.loss_ops.loss(target_tensor)
         return loss_val
 
     def backward(self):

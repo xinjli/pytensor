@@ -23,29 +23,29 @@ class Embedding(Operation):
         else:
             self.trainable = True
 
-        self.embedding_variables = self.graph.parameter.get_embedding(self.vocab_size, self.embed_dim)
+        self.embedding_tensors = self.graph.parameter.get_embedding(self.vocab_size, self.embed_dim)
 
-    def forward(self, input_variables):
+    def forward(self, input_tensors):
         """
         get the embedding
 
-        :param input_variables: input variable is a LongVariable containing word ids
+        :param input_tensors: input tensor is a LongTensor containing word ids
         :return: embedding
         """
-        self.register(input_variables)
+        self.register(input_tensors)
 
-        # embedding only takes 1 input variable
-        assert(len(input_variables) == 1)
+        # embedding only takes 1 input tensor
+        assert(len(input_tensors) == 1)
 
-        word_id = input_variables[0].value[0]
+        word_id = input_tensors[0].value[0]
 
         assert (word_id < self.vocab_size)
-        output_variable = self.embedding_variables[word_id]
+        output_tensor = self.embedding_tensors[word_id]
 
         if self.trainable:
-            self.graph.parameter.add_temp_variable(output_variable)
+            self.graph.parameter.add_temp_tensor(output_tensor)
 
-        return output_variable
+        return output_tensor
 
     def backward(self):
         return
