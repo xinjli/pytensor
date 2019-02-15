@@ -15,16 +15,10 @@ The framework is a toy framework implemented by pure numpy.
 
 ## Install
 
-To install From this repository (recommended):
+To install From this repository:
 
 	git clone https://github.com/xinjli/pytensor
 	python setup.py install
-
-This project is also on [pypi](https://pypi.python.org/pypi/pytensor>)
-
-To install from pypi:
-
-	pip install pytensor
 
 ## Tutorial
 
