@@ -26,6 +26,8 @@ class Trainer:
 
             for i in range(len(x_train)):
 
+                self.optimizer.zero_grad()
+
                 # extract data set
                 input_tensors = x_train[i]
                 target_tensor = y_train[i]
@@ -44,7 +46,7 @@ class Trainer:
                 self.model.backward()
 
                 # optimization
-                self.optimizer.update()
+                self.optimizer.step()
 
                 if (i+1) % iteration == 0:
                     # report iteration

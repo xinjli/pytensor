@@ -24,6 +24,9 @@ class Trainer:
 
             for i in range(len(x_train)):
 
+                # clear grad
+                self.optimizer.zero_grad()
+
                 # extract data set
                 input_tensors = Tensor([x_train[i]])
                 target_tensor = Tensor([y_train[i]])
@@ -38,8 +41,7 @@ class Trainer:
                 self.model.backward()
 
                 # optimization
-                self.optimizer.update()
-
+                self.optimizer.step()
 
             accuracy = self.test(x_test, y_test)
             print("\repoch {}: loss {}, acc {}".format(ii, loss, accuracy), end='')

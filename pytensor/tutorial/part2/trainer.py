@@ -11,7 +11,7 @@ class Trainer:
         """
 
         self.model = model
-        self.opt = SGD(self.model.parameter)
+        self.optimizer = SGD(self.model.parameter)
 
     def train(self, x_train, y_train, x_test=None, y_test=None, epoch=40):
 
@@ -22,6 +22,8 @@ class Trainer:
             loss = 0.0
 
             for i in range(len(x_train)):
+
+                self.optimizer.zero_grad()
 
                 # extract data set
                 input_tensors = Tensor([x_train[i]])
@@ -37,7 +39,7 @@ class Trainer:
                 self.model.backward()
 
                 # optimization
-                self.opt.update()
+                self.optimizer.step()
 
             accuracy = self.test(x_test, y_test)
             print("\repoch {}: loss {}, acc {}".format(ii, loss, accuracy), end='')
