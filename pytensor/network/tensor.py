@@ -13,7 +13,7 @@ class LongTensor:
         :param trainable:
         """
 
-        self.value = np.array(value, dtype='int64')
+        self.value = np.array(value, dtype=np.int32)
         self.name = name
 
     def clear_grad(self):
@@ -38,10 +38,10 @@ class Tensor:
         """
 
         # value for forward computation
-        self.value = np.array(value)
+        self.value = np.array(value, dtype=np.float32)
 
         # value for backward computation
-        self.grad = np.zeros(self.value.shape)
+        self.grad = np.zeros(self.value.shape, dtype=np.float32)
 
         # name for the Tensor (which will used in parameter for registration)
         self.name = name
@@ -57,7 +57,7 @@ class Tensor:
 
 
     def clear_grad(self):
-        self.grad = np.zeros(self.value.shape)
+        self.grad = np.zeros(self.value.shape, dtype=np.float32)
 
     def reshape(self, array):
         self.value.reshape(array)
