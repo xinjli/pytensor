@@ -39,7 +39,7 @@ In [1]: from pytensor import *
 
 In [2]: import numpy as np
 
-In [3]: v = tensor(np.random.random(5), name='hello')
+In [3]: v = Tensor(np.random.random(5), name='hello')
 
 In [4]: print(v)
 tensor {name: hello}
