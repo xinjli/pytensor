@@ -42,11 +42,25 @@ class Parameter:
 
             return tensor
 
-    def get_embedding(self, vocab_size, word_dim):
+    def get_embedding(self, name, shape):
+        """
+        retrieve a embedding with its name
+
+        :param name: name for embeding
+        :param shape: (vocab_size, word_dim)
+        :return:
+        """
 
         # get current embedding if it is created already
         if self.embeddings != None:
             return self.embeddings
+
+        # shape should be (vocab_size, word_dim)
+        assert len(shape) == 2
+        vocab_size, word_dim = shape
+
+        # get tensor for embedding
+        embedding_tensor = self.get_tensor(name, shape)
 
         # initialize the embedding
         self.embeddings = []
@@ -54,7 +68,12 @@ class Parameter:
         # embedding is implemented as a list of tensors
         # this is for efficient update
         for i in range(vocab_size):
-            embedding = Tensor([np.random.uniform(-np.sqrt(1./word_dim), np.sqrt(1./word_dim), word_dim)])
+
+            # create reference to embedding tensor
+            value = embedding_tensor.value[i].reshape(1,word_dim)
+            grad = embedding_tensor.grad[i].reshape(1, word_dim)
+
+            embedding = Tensor(value=value, grad=grad)
             self.embeddings.append(embedding)
 
         return self.embeddings

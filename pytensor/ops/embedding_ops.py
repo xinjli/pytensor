@@ -23,7 +23,7 @@ class Embedding(Operation):
         else:
             self.trainable = True
 
-        self.embedding_tensors = self.graph.parameter.get_embedding(self.vocab_size, self.embed_dim)
+        self.embedding_tensors = self.graph.parameter.get_embedding(name, (self.vocab_size, self.embed_dim))
 
     def forward(self, input_tensors):
         """

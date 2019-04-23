@@ -1,5 +1,5 @@
 from pytensor.network.graph import Graph
-from pytensor.network.tensor import Tensor
+from pytensor.network.tensor import Tensor, LongTensor
 
 class Linear(Graph):
 

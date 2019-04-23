@@ -30,7 +30,7 @@ class Tensor:
 
     """
 
-    def __init__(self, value, name='Tensor', trainable=True):
+    def __init__(self, value, name='Tensor', dtype=np.float32, trainable=True, grad=None):
         """
         :param value: numpy val
         :param name: name for the Tensor
@@ -38,10 +38,16 @@ class Tensor:
         """
 
         # value for forward computation
-        self.value = np.array(value, dtype=np.float32)
+        if isinstance(value, list):
+            self.value = np.array(value, dtype=dtype)
+        else:
+            self.value = value
 
         # value for backward computation
-        self.grad = np.zeros(self.value.shape, dtype=np.float32)
+        if grad is not None:
+            self.grad = grad
+        else:
+            self.grad = np.zeros(self.value.shape, dtype=np.float32)
 
         # name for the Tensor (which will used in parameter for registration)
         self.name = name
@@ -55,9 +61,8 @@ class Tensor:
     def __repr__(self):
         return self.__str__()
 
-
     def clear_grad(self):
-        self.grad = np.zeros(self.value.shape, dtype=np.float32)
+        self.grad.fill(0.0)
 
     def reshape(self, array):
         self.value.reshape(array)
