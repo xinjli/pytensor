@@ -2,6 +2,33 @@ from pytensor.network.tensor import *
 import numpy as np
 import pickle
 
+def write_parameter(parameter, path):
+    """
+    save the parameter
+
+    :param parameter: a Parameter instance
+    :param path: path to save
+    :return:
+    """
+
+    np.save(str(path), parameter.tensor_dict)
+
+
+def read_parameter(path):
+    """
+    load the parameter from disk
+
+    :param path: path to a npy file
+    :return: Parameter instance
+    """
+
+    parameter = Parameter()
+
+    # setup parameter
+    parameter.tensor_dict = np.load(str(path))[()]
+
+    return parameter
+
 
 class Parameter:
     """
