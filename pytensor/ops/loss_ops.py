@@ -28,7 +28,7 @@ class SoftmaxLoss(Loss):
     def backward(self):
 
         self.input_tensors.grad = self.output_tensor.value.copy()
-        self.input_tensors.grad[np.arange(self.batch_size), self.target_tensor.value] -= 1.0
+        self.input_tensors.grad[np.arange(self.batch_size), int(self.target_tensor.value)] -= 1.0
 
         self.input_tensors.grad *= 1.4426950408889634 # log2(e)
 
